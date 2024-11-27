@@ -1,0 +1,205 @@
+/* Main form styling */
+.room-check-form {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.room-check-form h2 {
+  text-align: center;
+  color: #333;
+  font-family: "Roboto", sans-serif;
+  margin-bottom: 20px;
+  font-size: 1.8em;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1em;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  animation: fadeInUp 0.5s ease;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+/* Availability Message */
+.availability-message {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #28a745;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Room card styling */
+.room-card {
+  border: 1px solid #ddd;
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #fdfdfd;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.5s ease-out;
+ 
+}
+.room_page{
+  display: flex;
+  flex-direction:column;
+}
+
+.room-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.room-card h3 {
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 1.5em;
+  font-family: "Roboto", sans-serif;
+}
+
+.room-card p {
+  margin: 5px 0;
+  font-size: 1em;
+  color: #555;
+}
+
+button.pay-now {
+  background-color: #28a745;
+  color: #fff;
+  margin-top: 10px;
+  animation: fadeInUp 0.5s ease;
+}
+
+button.pay-now:hover {
+  background-color: #218838;
+}
+
+/* Add person button styling */
+button {
+  margin: 5px 0;
+  font-size: 0.9em;
+  display: inline-block;
+}
+
+button.add-person {
+  background-color: #f9c846;
+  color: #333;
+  margin-top: 10px;
+}
+
+button.add-person:hover {
+  background-color: #f8b22c;
+}
+/* Existing styles retained */
+button.add-room {
+  background-color: #6c757d;
+  color: #fff;
+  margin-top: 10px;
+}
+
+button.add-room:hover {
+  background-color: #5a6268;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .room-check-form {
+    padding: 15px;
+  }
+
+  .room-card {
+    padding: 15px;
+  }
+
+  button {
+    font-size: 0.9em;
+    padding: 10px;
+  }
+}
