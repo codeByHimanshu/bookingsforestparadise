@@ -1,6 +1,6 @@
 /* Main form styling */
 .room-check-form {
-  max-width: 400px;
+  max-width: 96%;
   margin: 20px auto;
   padding: 20px;
   border: 1px solid #ddd;
@@ -8,6 +8,9 @@
   background-color: #ffffff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  border: 4px solid #0056b3;
 }
 
 .room-check-form h2 {
@@ -19,25 +22,28 @@
 }
 
 .form-group {
+  display: inline-flex;
+  align-items: center;
   margin-bottom: 15px;
 }
 
 .form-group label {
-  display: block;
-  margin-bottom: 5px;
+  margin: 10px;
   color: #555;
   font-weight: bold;
-  font-size: 0.9em;
+  font-size: 0.8em;
+  flex: 1; /* Labels take up equal space */
 }
 
 .form-group input,
 .form-group select {
-  width: 100%;
+  flex: 1.5; /* Inputs take up twice as much space as labels */
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 1em;
+  font-size: 0.8em;
   transition: all 0.3s ease;
+
 }
 
 .form-group input:focus,
@@ -48,13 +54,12 @@
 }
 
 button {
-  width: 100%;
-  padding: 12px;
+  padding: 10px;
   background-color: #007bff;
   color: #fff;
   border: none;
-  border-radius: 6px;
-  font-size: 1em;
+  border-radius: 5px;
+  font-size: 0.8em;
   cursor: pointer;
   transition: background-color 0.3s ease;
   animation: fadeInUp 0.5s ease;
@@ -79,6 +84,26 @@ button:hover:not(:disabled) {
   animation: fadeIn 0.5s ease-in-out;
 }
 
+/* Responsive Design for Small Screens */
+@media (max-width: 768px) {
+  .form-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .form-group label {
+    margin-bottom: 5px;
+    flex: unset; /* Reset flex for labels on small screens */
+  }
+
+  .form-group input,
+  .form-group select {
+    flex: unset; /* Reset flex for inputs on small screens */
+    width: 100%; /* Inputs span full width */
+  }
+}
+
+
 /* Room card styling */
 .room-card {
   border: 1px solid #ddd;
@@ -90,15 +115,15 @@ button:hover:not(:disabled) {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   animation: slideIn 0.5s ease-out;
  
-}
-.room_page{
   display: flex;
-  flex-direction:column;
+
+ 
 }
+
 
 .room-card img {
   width: 100%;
-  height: 150px;
+  height: 400px;
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 15px;
@@ -116,6 +141,9 @@ button:hover:not(:disabled) {
   margin: 5px 0;
   font-size: 1em;
   color: #555;
+  display: flex;
+  flex-direction:row;
+  margin: 10px;
 }
 
 button.pay-now {
@@ -123,6 +151,7 @@ button.pay-now {
   color: #fff;
   margin-top: 10px;
   animation: fadeInUp 0.5s ease;
+  margin: 10px; 
 }
 
 button.pay-now:hover {
@@ -131,7 +160,7 @@ button.pay-now:hover {
 
 /* Add person button styling */
 button {
-  margin: 5px 0;
+  margin: 5px 5px;
   font-size: 0.9em;
   display: inline-block;
 }
