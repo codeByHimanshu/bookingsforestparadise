@@ -1,7 +1,20 @@
 const express = require("express");
+const multer = require("multer");
 const Room = require("../models/Room");
 
 const router = express.Router();
+
+// Configure Multer for file storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Folder to save uploaded images
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname); // Generate a unique filename
+  },
+});
+
+const upload = multer({ storage });
 
 // Fetch all available rooms
 router.get("/", async (req, res) => {
@@ -13,21 +26,16 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Add a new room
-router.post("/", async (req, res) => {
-  const { name, price, image, capacity } = req.body;
+// Add a new room with image upload
+router.post("/", upload.single("image"), async (req, res) => {
+  const { name, price, available } = req.body;
+  const image = req.file ? req.file.path : null;
 
   try {
-    const newRoom = new Room({
-      name,
-      price,
-      image,
-      capacity,
-    });
-    await newRoom.save();
-    res.status(201).json(newRoom);
+    const newRoom = await Room.create({ name, price, available, image });
+    res.status(201).json({ success: true, data: newRoom });
   } catch (error) {
-    res.status(400).json({ message: "Invalid Room Data" });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 

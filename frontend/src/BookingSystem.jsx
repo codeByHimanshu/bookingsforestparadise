@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './assets/css/BookingSystem.css'
+import './assets/css/BookingSystem.css';
 import Header from './components/Header';
 
 const RoomAvailabilityCheck = () => {
@@ -11,43 +11,24 @@ const RoomAvailabilityCheck = () => {
   const [rooms, setRooms] = useState(1);
   const [message, setMessage] = useState("");
   const [showCards, setShowCards] = useState(false);
-
+  const [roomData, setRoomData] = useState([]);  // Correct state for room data
   const [bookingDetails, setBookingDetails] = useState([]);
 
+  // Fetch room data from the backend API
   useEffect(() => {
     const fetchRooms = async () => {
-      const response = await fetch("http://localhost:5000/api/rooms");
-      const data = await response.json();
-      setRoomData(data);
+      try {
+        const response = await fetch("http://localhost:5000/api/rooms");
+        const data = await response.json();
+        setRoomData(data);  // Update roomData state
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+      }
     };
     fetchRooms();
   }, []);
   
-  // Dummy room data
-  // const roomData = [
-  //   {
-  //     id: 1,
-  //     name: "Deluxe Room",
-  //     price: 2000,
-  //     image: "https://media.istockphoto.com/id/185083188/photo/luxury-shangri-la-hotel-room.jpg?s=1024x1024&w=is&k=20&c=c07mcS7zJ9-cPEjRS4JE-qGPymHSAoU-DNBsa8wmA8E=",
-  //     available: true,
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Super Deluxe Room",
-  //     price: 3000,
-  //     image: "https://plus.unsplash.com/premium_photo-1675615667752-2ccda7042e7e?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  //     available: true,
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Family Suite",
-  //     price: 5000,
-  //     image: "https://media.istockphoto.com/id/92397207/photo/luxurious-hotel-room.jpg?s=1024x1024&w=is&k=20&c=qMqw3EZ_fac46TBvtgqov_W9Bz8IhcGRoDmLNTOlNbg=",
-  //     available: true,
-  //   },
-  // ];
-
+  // Check availability logic
   const checkAvailability = () => {
     const totalPeople = parseInt(adults) + parseInt(children);
     const maxCapacity = rooms * 4;
@@ -76,8 +57,8 @@ const RoomAvailabilityCheck = () => {
     }
   };
 
+  // Reset form
   const goBack = () => {
-    // Reset all states and show the form again
     setCheckInDate("");
     setCheckOutDate("");
     setAdults(1);
@@ -87,6 +68,7 @@ const RoomAvailabilityCheck = () => {
     setShowCards(false);
   };
 
+  // Increase room logic
   const increaseRooms = (id) => {
     setBookingDetails((prevDetails) =>
       prevDetails.map((room) => ({
@@ -98,6 +80,7 @@ const RoomAvailabilityCheck = () => {
     setRooms(rooms + 1);
   };
 
+  // Add person logic
   const handleAddPerson = (id) => {
     setBookingDetails((prevDetails) =>
       prevDetails.map((room) => {
@@ -124,122 +107,116 @@ const RoomAvailabilityCheck = () => {
 
   return (
     <> 
-    <Header />
-    <div className="room-check-form">
-      {!showCards ? (
-        <>
-        {/* <h2>Room Availability Check</h2> */}
-          <form>
-            <div className="form-group">
-              <label htmlFor="checkInDate">Check-In Date:</label>
-              <input
-                type="date"
-                id="checkInDate"
-                value={checkInDate}
-                min={today}
-                onChange={(e) => setCheckInDate(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="checkOutDate">Check-Out Date:</label>
-              <input
-                type="date"
-                id="checkOutDate"
-                value={checkOutDate}
-                min={checkInDate || today}
-                onChange={(e) => setCheckOutDate(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="adults">Adults(max 30):</label>
-              <input
-                type="number"
-                id="adults"
-                value={adults}
-                min="1"
-                max="30"
-                onChange={(e) => setAdults(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="children">Children(max 10):</label>
-              <input
-                type="number"
-                id="children"
-                value={children}
-                min="0"
-                max="10"
-                onChange={(e) => setChildren(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="rooms"> Rooms(max 10):</label>
-              <select
-                id="rooms"
-                value={rooms}
-                onChange={(e) => setRooms(e.target.value)}
+      <Header />
+      <div className="room-check-form">
+        {!showCards ? (
+          <>
+            <form>
+              <div className="form-group">
+                <label htmlFor="checkInDate">Check-In Date:</label>
+                <input
+                  type="date"
+                  id="checkInDate"
+                  value={checkInDate}
+                  min={today}
+                  onChange={(e) => setCheckInDate(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="checkOutDate">Check-Out Date:</label>
+                <input
+                  type="date"
+                  id="checkOutDate"
+                  value={checkOutDate}
+                  min={checkInDate || today}
+                  onChange={(e) => setCheckOutDate(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="adults">Adults (max 30):</label>
+                <input
+                  type="number"
+                  id="adults"
+                  value={adults}
+                  min="1"
+                  max="30"
+                  onChange={(e) => setAdults(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="children">Children (max 10):</label>
+                <input
+                  type="number"
+                  id="children"
+                  value={children}
+                  min="0"
+                  max="10"
+                  onChange={(e) => setChildren(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="rooms">Rooms (max 10):</label>
+                <select
+                  id="rooms"
+                  value={rooms}
+                  onChange={(e) => setRooms(e.target.value)}
+                >
+                  {[...Array(10).keys()].map(i => (
+                    <option key={i} value={i + 1}>
+                      {i + 1} Room{(i + 1) > 1 ? 's' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                className='cAvail'
+                type="button"
+                onClick={checkAvailability}
+                disabled={!checkInDate || !checkOutDate}
               >
-                <option value="1">1 Room</option>
-                <option value="2">2 Rooms</option>
-                <option value="3">3 Rooms</option>
-                <option value="4">4 Rooms</option>
-                <option value="5">5 Rooms</option>
-                <option value="6">6 Rooms</option>
-                <option value="7">7 Rooms</option>
-                <option value="8">8 Rooms</option>
-                <option value="9">9 Rooms</option>
-                <option value="10">10 Rooms</option>
-              </select>
-            <button className='cAvail'
-              type="button"
-              onClick={checkAvailability}
-              disabled={!checkInDate || !checkOutDate}
-            >
-              Check Availability
+                Check Availability
+              </button>
+            </form>
+            {message && <p className="availability-message">{message}</p>}
+          </>
+        ) : (
+          <>
+            <button className="go-back" onClick={goBack}>
+              Go Back
             </button>
-            </div>
-          </form>
-          {message && <p className="availability-message">{message}</p>}
-        </>
-      ) : (
-        <>
-          <button className="go-back" onClick={goBack}>
-            Go Back
-          </button>
-          {bookingDetails.map((room) => (
-          <div className="room_page">
-              <div className="room-card" key={room.id}>
-              <img src={room.image} alt={room.name} className="room-image" />
-             <div>
-             <h3>{room.name}</h3>
-              <p>Selected Adults: {adults}</p>
-              <p>Selected Children: {children}</p>
-              <p>People to Book: {room.selectedPeople}</p>
-              <p>Selected Rooms: {room.selectedRooms}</p>
-              <p>Total Amount: ₹{room.totalAmount}</p>
-              <button
-                className="add-person btn1"
-                onClick={() => handleAddPerson(room.id)}
-              >
-                + Add Person
-              </button>
-              <button
-                className="add-room btn1"
-                onClick={() => increaseRooms(room.id)}
-              >
-                + Add Room
-              </button>
-              <button className="pay-now btn1">Pay Now</button>
-             </div>
-            </div>
-          </div>
-          ))}
-        </>
-      )}
-    </div>
+            {bookingDetails.map((room) => (
+              <div className="room_page" key={room.id}>
+                <div className="room-card">
+                  <img src={room.image} alt={room.name} className="room-image" />
+                  <div>
+                    <h3>{room.name}</h3>
+                    <p>Selected Adults: {adults}</p>
+                    <p>Selected Children: {children}</p>
+                    <p>People to Book: {room.selectedPeople}</p>
+                    <p>Selected Rooms: {room.selectedRooms}</p>
+                    <p>Total Amount: ₹{room.totalAmount}</p>
+                    <button
+                      className="add-person btn1"
+                      onClick={() => handleAddPerson(room.id)}
+                    >
+                      + Add Person
+                    </button>
+                    <button
+                      className="add-room btn1"
+                      onClick={() => increaseRooms(room.id)}
+                    >
+                      + Add Room
+                    </button>
+                    <button className="pay-now btn1">Pay Now</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
     </>
   );
 };
 
 export default RoomAvailabilityCheck;
-
