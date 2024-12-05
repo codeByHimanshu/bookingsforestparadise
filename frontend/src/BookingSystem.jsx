@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './assets/css/BookingSystem.css';
 import Header from './components/Header';
+import { initializePayment } from './utils/peyment';
 
 const RoomAvailabilityCheck = () => {
   const today = new Date().toISOString().split("T")[0];
@@ -14,7 +15,16 @@ const RoomAvailabilityCheck = () => {
   const [roomData, setRoomData] = useState([]);  // Correct state for room data
   const [bookingDetails, setBookingDetails] = useState([]);
 
-  // Fetch room data from the backend API
+  const handlePayNow = async (totalAmount, roomId, selectedRooms) => {
+    if (!totalAmount) {
+        alert('Please choose a room.');
+        return;
+    }
+    localStorage.setItem('roomId', roomId);  // Save room ID
+    localStorage.setItem('selectedRooms', selectedRooms);  // Save selected rooms
+    await initializePayment(totalAmount, roomId, selectedRooms);  // Pass data to payment function
+};
+
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -27,7 +37,7 @@ const RoomAvailabilityCheck = () => {
     };
     fetchRooms();
   }, []);
-  
+
   // Check availability logic
   const checkAvailability = () => {
     const totalPeople = parseInt(adults) + parseInt(children);
@@ -50,14 +60,14 @@ const RoomAvailabilityCheck = () => {
           totalAmount: totalPeople * room.price,
         }))
       );
-      setShowCards(true); // Show cards
+      setShowCards(true);
       setMessage("");
     } else {
-      setMessage("No rooms available for the selected dates.");
+      setMessage("Oops! Something went wrong. We're sorry, but there seems to be an issue. Please try again later or contact support if the problem persists");
     }
   };
 
-  // Reset form
+
   const goBack = () => {
     setCheckInDate("");
     setCheckOutDate("");
@@ -79,6 +89,34 @@ const RoomAvailabilityCheck = () => {
     );
     setRooms(rooms + 1);
   };
+  const handleBooking = async (roomId, selectedRooms) => {
+    const roomsToUpdate = [
+      {
+        roomId, // Only the specific room's ID
+        selectedRooms, // Only the specific room's selected rooms
+      },
+    ];
+  
+    console.log("Rooms to update:", roomsToUpdate);
+  
+    try {
+      const response = await fetch('http://localhost:5000/api/rooms/update-availability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomsToUpdate }),
+      });
+  
+      if (response.ok) {
+        alert('Booking successful! Rooms have been updated.');
+      } else {
+        alert('Rooms Unavailable');
+      }
+    } catch (error) {
+      console.error('Error during booking:', error);
+      alert('An error occurred during the booking process.');
+    }
+  };
+  
 
   // Add person logic
   const handleAddPerson = (id) => {
@@ -188,6 +226,7 @@ const RoomAvailabilityCheck = () => {
               <div className="room_page" key={room.id}>
                 <div className="room-card">
                   <img src={room.image} alt={room.name} className="room-image" />
+                  <h3>{room.availableRooms} - Rooms Available</h3>
                   <div>
                     <h3>{room.name}</h3>
                     <p>Selected Adults: {adults}</p>
@@ -207,7 +246,11 @@ const RoomAvailabilityCheck = () => {
                     >
                       + Add Room
                     </button>
-                    <button className="pay-now btn1">Pay Now</button>
+                    <button className="pay-now btn1" onClick={() => handleBooking(room._id, room.selectedRooms)}>Pay Now</button>
+                    <button onClick={() => handlePayNow(room.totalAmount, room.id, room.selectedRooms)}>
+    Book Now
+</button>
+
                   </div>
                 </div>
               </div>

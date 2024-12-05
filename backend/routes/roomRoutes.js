@@ -28,11 +28,11 @@ router.get("/", async (req, res) => {
 
 // Add a new room with image upload
 router.post("/", upload.single("image"), async (req, res) => {
-  const { name, price, available } = req.body;
+  const { name, price, available,availableRooms } = req.body;
   const image = req.file ? req.file.path : null;
 
   try {
-    const newRoom = await Room.create({ name, price, available, image });
+    const newRoom = await Room.create({ name, price, available, image,availableRooms });
     res.status(201).json({ success: true, data: newRoom });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -54,6 +54,50 @@ router.put("/:id", async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.post('/update-availability', async (req, res) => {
+  try {
+    const { roomsToUpdate } = req.body;
+
+    // Ensure roomsToUpdate is an array
+    if (!Array.isArray(roomsToUpdate)) {
+        return res.status(400).send('Invalid format: roomsToUpdate should be an array');
+    }
+
+    // Iterate over each room to update its available rooms
+    for (let { roomId, selectedRooms } of roomsToUpdate) {
+        // Find the specific room by _id in the database
+        const room = await Room.findById(roomId);
+
+        if (room) {
+            // Ensure availableRooms is parsed as integer (convert from string if necessary)
+            let availableRooms = parseInt(room.availableRooms, 10); // Parse availableRooms as integer
+
+            // Check if there are enough available rooms
+            if (availableRooms >= selectedRooms) {
+                // Subtract selectedRooms from availableRooms
+                availableRooms -= selectedRooms;
+
+                // Update the room's availableRooms in the database
+                room.availableRooms = availableRooms.toString(); // Store availableRooms as string
+
+                // Save the updated room document
+                await room.save(); // Ensure we are saving only the selected room
+            } else {
+                return res.status(400).send('Not enough rooms available');
+            }
+        } else {
+            return res.status(404).send(`Room with ID ${roomId} not found`);
+        }
+    }
+
+    // Send a success response after updating the rooms
+    res.status(200).send('Room availability updated successfully');
+  } catch (error) {
+    console.error('Error updating room availability:', error); // Log detailed error
+    res.status(500).send('Server error');
   }
 });
 

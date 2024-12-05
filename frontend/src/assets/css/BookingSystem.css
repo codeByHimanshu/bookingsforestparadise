@@ -20,7 +20,25 @@
   margin-bottom: 20px;
   font-size: 1.8em;
 }
+.room-check-form h4 {
+  text-align: left;
+  color: #009b1c;
+  font-family: "Roboto", sans-serif;
 
+  /* z-index: 101; */
+  margin-top: 70px;
+  margin-left: 7px;
+  font-size: 1.8em;
+}
+.room-check-form h5 {
+  text-align: left;
+  color: #4e4e4e;
+  font-family: "Roboto", sans-serif;
+  /* z-index: 101; */
+  margin-top: 100px;
+  margin-left: 7px;
+  font-size: 1.8em;
+}
 .form-group {
   display: inline-flex;
   align-items: center;
@@ -80,7 +98,7 @@ button:hover:not(:disabled) {
   text-align: center;
   font-weight: bold;
   font-size: 1.2em;
-  color: #28a745;
+  color: #cf0000;
   animation: fadeIn 0.5s ease-in-out;
 }
 

@@ -7,6 +7,7 @@ import Home from './Home.jsx';
 import Gallery from './Gallery.jsx';
 import Rooms from './Rooms.jsx';
 import BookingSystem from './BookingSystem.jsx';
+import RoomCard from './components/Roomcard.jsx';
 
 // Dummy data for the hotel
 const hotelData = {
@@ -33,6 +34,7 @@ const App = () => {
 
       <Routes>
         <Route path ='/' element = {<Home />} />
+        <Route path ='/card' element = {<RoomCard />} />
         <Route path ='/home' element = {<Home />} />
         <Route path ='/about' element = {<About />} />
         <Route path ='/contact' element = {<Contact />} />
