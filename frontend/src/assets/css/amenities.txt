@@ -1,0 +1,4 @@
+import { FaWifi } from "react-icons/fa"; <FaWifi />
+import { MdOutlineBathroom } from "react-icons/md"; <MdOutlineBathroom />
+import { MdOutlineLocalLaundryService } from "react-icons/md"; <MdOutlineLocalLaundryService />
+import { MdRoomService } from "react-icons/md"; <MdRoomService />
