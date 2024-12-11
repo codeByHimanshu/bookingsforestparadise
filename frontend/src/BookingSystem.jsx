@@ -101,36 +101,36 @@ const RoomAvailabilityCheck = () => {
     );
     setRooms(rooms + 1);
   };
-  const handleBooking = async (roomId, selectedRooms) => {
-    const roomsToUpdate = [
-      {
-        roomId, // Only the specific room's ID
-        selectedRooms, // Only the specific room's selected rooms
-      },
-    ];  
+  // const handleBooking = async (roomId, selectedRooms) => {
+  //   const roomsToUpdate = [
+  //     {
+  //       roomId, // Only the specific room's ID
+  //       selectedRooms, // Only the specific room's selected rooms
+  //     },
+  //   ];  
 
-    console.log("Rooms to update:", roomsToUpdate);
+  //   console.log("Rooms to update:", roomsToUpdate);
 
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/rooms/update-availability",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roomsToUpdate }),
-        }
-      );
+  //   try {
+  //     const response = await fetch(
+  //       "http://localhost:5000/api/rooms/update-availability",
+  //       {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ roomsToUpdate }),
+  //       }
+  //     );
 
-      if (response.ok) {
-        alert("Booking successful! Rooms have been updated.");
-      } else {
-        alert("Rooms Unavailable");
-      }
-    } catch (error) {
-      console.error("Error during booking:", error);
-      alert("An error occurred during the booking process.");
-    }
-  };
+  //     if (response.ok) {
+  //       alert("Booking successful! Rooms have been updated.");
+  //     } else {
+  //       alert("Rooms Unavailable");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error during booking:", error);
+  //     alert("An error occurred during the booking process.");
+  //   }
+  // };
 
   // Add person logic
   const handleAddPerson = (id) => {
@@ -244,27 +244,43 @@ const RoomAvailabilityCheck = () => {
           </button>
             <div className="room_page">
               <div className="room-card">
-                <img src='https://ratanainternational.com/assets/images/classic.JPG' alt="Standard" className="room-image" />
+            {bookingDetails .filter((room) => room.name === "Standard")
+        .map((room) => (
+              <>
+                <img src={room.image} alt="Standard" className="room-image" />
                 <div className="amenities">
-                <h2>Standard</h2>
-                <div className="amenities-grid">
-                <h3><FaWifi /> Free Wifi </h3>
-                <h3><BsSafe /> Safe </h3>
-                <h3><IoTvSharp /> TV </h3>
-                <h3><MdDesk /> Desk </h3>
-                <h3><TbAirConditioning /> AC </h3>
-                </div>
-                <button className="button" onClick={() => setPage("next")}>Select!</button>
-                </div>
+  <h2>Standard</h2>
+  <div className="amenities-grid">
+    <h3><FaWifi /> Free Wifi</h3>
+    <h3><BsSafe /> Safe</h3>
+    <h3><IoTvSharp /> TV</h3>
+    <h3><MdDesk /> Desk</h3>
+    <h3><TbAirConditioning /> AC</h3>
+  </div>
+  <div className="button-container">
+    <button className="button select-btn" onClick={() => setPage("next")}>
+      Select!
+    </button>
+    <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
+  </div>
+</div></>
+              ))}
+
+              
               </div>
             </div>
         </div>
         <div className="inner">
             <div className="room_page">
               <div className="room-card">
-                <img src='https://ratanainternational.com/assets/images/classic.JPG' alt="Standard" className="room-image" />
-                <div className="amenities">
-                <h2>Executive</h2>
+                
+                {bookingDetails .filter((room) => room.name === "Executive")
+        .map((room) => (
+          <>
+          <img src={room.image} alt="Executive" className="room-image" />
+
+              <div className="amenities">
+              <h2>Executive</h2>
                 <div className="amenities-grid">
                 <h3><FaWifi /> Free Wifi </h3>
                 <h3><GiSlippers /> Slippers </h3>
@@ -274,17 +290,27 @@ const RoomAvailabilityCheck = () => {
                 <h3><MdDesk /> Desk </h3>
                 <h3><TbAirConditioning /> AC </h3>
                 </div>
-                <button className="button" onClick={() => setPage("next")}>Select!</button>
-                </div>
+  <div className="button-container">
+    <button className="button select-btn" onClick={() => setPage("next")}>
+      Select!
+    </button>
+    <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
+  </div>
+</div></>
+              ))}
               </div>
             </div>
         </div>
         <div className="inner">
             <div className="room_page">
               <div className="room-card">
-                <img src='https://ratanainternational.com/assets/images/classic.JPG' alt="Standard" className="room-image" />
-                <div className="amenities">
-                <h2>Business</h2>
+                
+                {bookingDetails .filter((room) => room.name === "Business")
+        .map((room) => (
+          <>
+          <img src={room.image} alt="Business" className="room-image" />
+              <div className="amenities">
+                <h2 >Business</h2>
                 <div className="amenities-grid">
                 <h3><FaWifi /> Free Wifi </h3>
                 <h3><GiSlippers /> Slippers </h3>
@@ -295,17 +321,27 @@ const RoomAvailabilityCheck = () => {
                 <h3><MdDesk /> Desk </h3>
                 <h3><TbAirConditioning /> AC </h3>
                 </div>
-                <button className="button" onClick={() => setPage("next")}>Select!</button>
-                </div>
+  <div className="button-container">
+    <button className="button select-btn" onClick={() => setPage("next")}>
+      Select!
+    </button>
+    <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
+  </div>
+</div></>
+              ))}
               </div>
             </div>
         </div>
         <div className="inner">
             <div className="room_page">
               <div className="room-card">
-                <img src='https://ratanainternational.com/assets/images/classic.JPG' alt="Standard" className="room-image" />
-                <div className="amenities">
-                  <h2>Suite Room</h2>
+
+                  {bookingDetails .filter((room) => room.name === "Suite Room")
+        .map((room) => (
+          <>
+          <img src={room.image} alt="Suit Room" className="room-image" />               
+              <div className="amenities">
+                  <h2 >Suite Room</h2>
                   <div className="amenities-grid">
                   <h3><FaWifi /> Free Wifi </h3>
                 <h3><GiSlippers /> Slippers </h3>
@@ -316,9 +352,15 @@ const RoomAvailabilityCheck = () => {
                 <h3><IoTvSharp /> TV </h3>
                 <h3><MdDesk /> Desk </h3>
                 <h3><TbAirConditioning /> AC </h3>
-                  </div>
-                <button className="button" onClick={() => setPage("next")}>Select!</button>
                 </div>
+  <div className="button-container">
+    <button className="button select-btn" onClick={() => setPage("next")}>
+      Select!
+    </button>
+    <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
+  </div>
+</div></>
+              ))}
               </div>
             </div>
         </div>

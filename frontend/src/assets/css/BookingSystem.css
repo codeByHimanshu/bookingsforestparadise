@@ -20,7 +20,7 @@
 .page-enter-active {
   opacity: 1;
   transform: translateX(0);
-  transition: opacity 300ms, transform 300ms;
+  transition: opacity 200ms, transform 200ms;
 }
 
 .page-exit {
@@ -33,6 +33,21 @@
   transform: translateX(-100%);
   transition: opacity 300ms, transform 300ms;
 } */
+.button-container {
+  display: flex;
+  flex-direction: column; /* Stacks buttons vertically */
+  align-items: center; /* Centers buttons */
+  gap: 10px; /* Space between buttons */
+}
+
+.select-btn {
+  color: #fff;
+}
+
+.rooms-left-btn {
+  background-color: #28a745;
+  color: #fff;
+}
 
 .disabled {
   background-color: #ccc;
@@ -47,6 +62,7 @@
 
 .amenities-grid {
   display: grid;
+  text-align: left;
   grid-template-columns: repeat(2, 1fr); /* Two items per row */
   gap: 25px; /* Adjust gap for proper spacing */
   margin-top: 30px;
@@ -216,7 +232,7 @@ button:hover:not(:disabled) {
 .room-card h3 {
   margin-bottom: 10px;
   color: #333333c7;
-  font-size: 1.5em;
+  font-size: 1.2em;
   font-family: "Roboto", sans-serif;
 }
 
