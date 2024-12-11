@@ -12,6 +12,87 @@
   flex-direction: column;
   border: 4px solid #0056b3;
 }
+/* .page-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity 300ms, transform 300ms;
+} */
+.button-container {
+  display: flex;
+  flex-direction: column; /* Stacks buttons vertically */
+  align-items: center; /* Centers buttons */
+  gap: 10px; /* Space between buttons */
+}
+
+.select-btn {
+  color: #fff;
+}
+
+.rooms-left-btn {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.disabled {
+  background-color: #ccc;
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.amenities {
+  text-align: center;
+  width: 500px;
+}
+
+.amenities-grid {
+  display: grid;
+  text-align: left;
+  grid-template-columns: repeat(2, 1fr); /* Two items per row */
+  gap: 25px; /* Adjust gap for proper spacing */
+  margin-top: 30px;
+}
+
+.amenities-grid div {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between icon and text */
+}
+
+.room-image {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
 
 .room-check-form h2 {
   text-align: center;
@@ -150,15 +231,15 @@ button:hover:not(:disabled) {
 
 .room-card h3 {
   margin-bottom: 10px;
-  color: #333;
-  font-size: 1.5em;
+  color: #333333c7;
+  font-size: 1.2em;
   font-family: "Roboto", sans-serif;
 }
 
 .room-card p {
   margin: 5px 0;
   font-size: 1em;
-  color: #555;
+  color: #383838;
   display: flex;
   flex-direction:row;
   margin: 10px;

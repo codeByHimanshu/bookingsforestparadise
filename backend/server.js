@@ -43,11 +43,8 @@ const razorpay = new Razorpay({
 // Handle creating an order
 app.post("/create-order", async (req, res) => {
     try {
-        const { amount, currency, receipt, notes } = req.body;
-        // if (![2000,3000,3500,7000,10500,14000,4000,9000,6000,12000,8000,10000].includes(parseInt(amount))) {
-        //     return res.status(400).json({ error: "Invalid room price" });
-        // }
-
+        const { amount, currency, receipt, notes,contact,method,email,vpa } = req.body;
+        console.log("Contact:", contact);
         const options = {
             amount: amount * 100,
             currency,
@@ -60,9 +57,14 @@ app.post("/create-order", async (req, res) => {
             amount: order.amount,
             currency: order.currency,
             receipt: order.receipt,
+            contact,
+            method,
+            email,
+            vpa,
             status: order.status,
         });
         await newOrder.save();
+        console.log("New Order:", newOrder);
 
         res.json(order);
     } catch (error) {
@@ -110,6 +112,7 @@ app.get('/fetch-payment-details', async (req, res) => {
     }
     try {
         const order = await Order.findOne({ order_id });
+        console.log(order.contact);
         console.log(order.order_id)
         if (!order) {
             return res.status(404).json({ error: "Order not found" });

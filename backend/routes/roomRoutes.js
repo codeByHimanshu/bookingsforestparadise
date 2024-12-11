@@ -29,11 +29,11 @@ router.get("/", async (req, res) => {
 
 // Add a new room with image upload
 router.post("/", upload.single("image"), async (req, res) => {
-  const { name, price, available,availableRooms } = req.body;
+  const { name, price, available,availableRooms, amenities } = req.body;
   const image = req.file ? req.file.path : null;
 
   try {
-    const newRoom = await Room.create({ name, price, available, image,availableRooms });
+    const newRoom = await Room.create({ name, price, available, image,availableRooms, amenities });
     res.status(201).json({ success: true, data: newRoom });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
