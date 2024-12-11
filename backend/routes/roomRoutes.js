@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const Room = require("../models/Room");
+const migrate = require("../config/Migrate");
 
 const router = express.Router();
 
@@ -100,5 +101,6 @@ router.post('/update-availability', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+router.post('/form',migrate);
 
 module.exports = router;

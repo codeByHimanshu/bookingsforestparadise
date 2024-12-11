@@ -7,6 +7,7 @@ const Razorpay = require('razorpay');
 const bodyParser = require('body-parser');
 const { validateWebhookSignature } = require('razorpay/dist/utils/razorpay-utils.js')
 const Order = require('./models/Order.js')
+const migrate=require('./config/Migrate.js')
 const path = 'path'
 // Load environment variables
 dotenv.config();
@@ -18,7 +19,8 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json()); // Body parser
+app.use(express.json());
+
 
 // Routes
 app.use("/api/rooms", roomRoutes);
@@ -103,22 +105,18 @@ app.post("/verify-payment", async (req, res) => {
 });
 app.get('/fetch-payment-details', async (req, res) => {
     const { order_id } = req.query;
-
     if (!order_id) {
         return res.status(400).json({ error: "Order ID is required" });
     }
-
     try {
         const order = await Order.findOne({ order_id });
         console.log(order.order_id)
-
         if (!order) {
             return res.status(404).json({ error: "Order not found" });
         }
-
         const paymentDetails = {
             order_id: order.order_id,
-            amount: order.amount / 100, // Convert back from paise to INR
+            amount: order.amount / 100,
             currency: order.currency,
             payment_id: order.payment_id || null,
             status: order.status,
@@ -131,7 +129,7 @@ app.get('/fetch-payment-details', async (req, res) => {
     }
 });
 
-
+app.post('/form',migrate);
 
 // Static file route for frontend (index.html)
 app.get("/payment-success", (req, res) => {
@@ -140,6 +138,31 @@ app.get("/payment-success", (req, res) => {
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
+
+app.post('/verification', (req, res) => {
+	// do a validation
+	const secret = '123456789'
+
+	console.log(req.body)
+
+	const crypto = require('crypto')
+
+	const shasum = crypto.createHmac('sha256', secret)
+	shasum.update(JSON.stringify(req.body))
+	const digest = shasum.digest('hex')
+
+	console.log(digest, req.headers['x-razorpay-signature'])
+
+	if (digest === req.headers['x-razorpay-signature']) {
+		console.log('request is legit')
+		// process it
+		require('fs').writeFileSync('payment1.json', JSON.stringify(req.body, null, 4))
+	} else {
+		// pass it
+	}
+	res.json({ status: 'ok' })
+})
+
 
 // Start server
 const PORT = process.env.PORT || 5000;

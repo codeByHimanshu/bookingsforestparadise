@@ -8,6 +8,7 @@ import Gallery from './Gallery.jsx';
 import Rooms from './Rooms.jsx';
 import BookingSystem from './BookingSystem.jsx';
 import RoomCard from './components/Roomcard.jsx';
+import BookingDetailsForm from './BookingDetailsForm.jsx';
 
 // Dummy data for the hotel
 const hotelData = {
@@ -29,9 +30,7 @@ const hotelData = {
 
 const App = () => {
   return (
-
       <BrowserRouter>
-
       <Routes>
         <Route path ='/' element = {<Home />} />
         <Route path ='/card' element = {<RoomCard />} />
@@ -41,10 +40,9 @@ const App = () => {
         <Route path ='/gallery' element = {<Gallery />} />
         <Route path ='/rooms' element = {<Rooms />} />
         <Route path ='/booking' element = {<BookingSystem />} />
+        <Route path='/form' element={<BookingDetailsForm/>}/>
       </Routes>
-
-      </BrowserRouter>
-  
+      </BrowserRouter>  
   );
 }
 
