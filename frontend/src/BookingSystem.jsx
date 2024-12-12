@@ -20,6 +20,7 @@ const RoomAvailabilityCheck = () => {
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
+  const [selectedRoomId, setSelectedRoomId] = useState(null);
   const [message, setMessage] = useState("");
   const [showCards, setShowCards] = useState(false);
   const [roomData, setRoomData] = useState([]); // Correct state for room data
@@ -258,15 +259,13 @@ const RoomAvailabilityCheck = () => {
     <h3><TbAirConditioning /> AC</h3>
   </div>
   <div className="button-container">
-    <button className="button select-btn" onClick={() => setPage("next")}>
-      Select!
+    <button className="button select-btn" onClick={() => {setSelectedRoomId(room.id); setPage("next")}}>
+      Select
     </button>
     <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
   </div>
 </div></>
               ))}
-
-              
               </div>
             </div>
         </div>
@@ -291,8 +290,8 @@ const RoomAvailabilityCheck = () => {
                 <h3><TbAirConditioning /> AC </h3>
                 </div>
   <div className="button-container">
-    <button className="button select-btn" onClick={() => setPage("next")}>
-      Select!
+    <button className="button select-btn" onClick={() =>{setSelectedRoomId(room.id); setPage("next")}}>
+      Select
     </button>
     <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
   </div>
@@ -322,8 +321,8 @@ const RoomAvailabilityCheck = () => {
                 <h3><TbAirConditioning /> AC </h3>
                 </div>
   <div className="button-container">
-    <button className="button select-btn" onClick={() => setPage("next")}>
-      Select!
+    <button className="button select-btn" onClick={() =>{setSelectedRoomId(room.id); setPage("next")}}>
+      Select
     </button>
     <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
   </div>
@@ -354,8 +353,8 @@ const RoomAvailabilityCheck = () => {
                 <h3><TbAirConditioning /> AC </h3>
                 </div>
   <div className="button-container">
-    <button className="button select-btn" onClick={() => setPage("next")}>
-      Select!
+    <button className="button select-btn" onClick={() =>{setSelectedRoomId(room.id); setPage("next")}}>
+      Select
     </button>
     <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
   </div>
@@ -380,9 +379,8 @@ const RoomAvailabilityCheck = () => {
             <div className="room_page" key={room.id}>
               <div className="room-card">
                 <img src={room.image} alt={room.name} className="room-image" />
-                <h3>{room.availableRooms} - Rooms Available</h3>
-                <div>
-                  <h3>{room.name}</h3>
+                <div className="amenities">
+                  <h2>{room.name}</h2>
                   <p>Selected Adults: {adults}</p>
                   <p>Selected Children: {children}</p>
                   <p>People to Book: {room.selectedPeople}</p>
@@ -400,7 +398,7 @@ const RoomAvailabilityCheck = () => {
                     onClick={() => increaseRooms(room.id)}
                   >
                     + Add Room
-                  </button>
+                  </button><br />
                   <button
                     className={`btn1 ${
                       room.selectedRooms === 0 ? "disabled" : ""
@@ -412,6 +410,11 @@ const RoomAvailabilityCheck = () => {
                   >
                     Book Now
                   </button>
+                
+                <div className="button-container">
+
+                <div style={{marginTop:"20px"}}><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
+                </div>
                 </div>
               </div>
             </div>
