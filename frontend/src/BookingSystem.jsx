@@ -37,44 +37,13 @@ const RoomAvailabilityCheck = () => {
     localStorage.setItem("selectedRooms", selectedRooms); // Save selected rooms
     await initializePayment(totalAmount, roomId, selectedRooms); // Pass data to payment function
   };
-  const saveBookingDetails = async () => {
-    try {
-      const bookingData = {
-        checkInDate,
-        checkOutDate,
-        NoOfAdults: adults,
-        NoOfChildren: children,
-        NoOfRooms: rooms,
-      };
-      const response = await fetch(
-        "http://localhost:5000/api/rooms/save-booking-details",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(bookingData),
-        }
-      );
-      console.log(response.json())
-      if(response.ok){
-        const result=await response.json();
-        alert("booking details saved succesfully")
-        console.log(result);
-      }else{
-        console.log("error while submitting the details");
-        alert("failed to save booking details")
-      }
-    } catch (error) {
-      console.log(error);
-      alert("error from the catch block");
-    }
-  };
 
   useEffect(() => {
     const fetchRooms = async () => {
       try {
         const response = await fetch("http://localhost:5000/api/rooms");
         const data = await response.json();
-        setRoomData(data);
+        setRoomData(data); 
       } catch (error) {
         console.error("Error fetching rooms:", error);
       }
@@ -152,7 +121,7 @@ const RoomAvailabilityCheck = () => {
   //       roomId, // Only the specific room's ID
   //       selectedRooms, // Only the specific room's selected rooms
   //     },
-  //   ];
+  //   ];  
 
   //   console.log("Rooms to update:", roomsToUpdate);
 
@@ -268,10 +237,7 @@ const RoomAvailabilityCheck = () => {
               <button
                 className="cAvail"
                 type="button"
-                onClick={()=>{
-                  checkAvailability();
-                  saveBookingDetails();
-                }}
+                onClick={checkAvailability}
                 disabled={!checkInDate || !checkOutDate}
               >
                 Check Availability
@@ -279,7 +245,7 @@ const RoomAvailabilityCheck = () => {
             </form>
             {message && <p className="availability-message">{message}</p>}
           </>
-        ) : (
+         ) : (
           <>
           <TransitionGroup>
   {page === "start" && (
@@ -306,15 +272,13 @@ const RoomAvailabilityCheck = () => {
     <h3><TbAirConditioning /> AC</h3>
   </div>
   <div className="button-container">
-    <button className="button select-btn" onClick={() => setPage("next")}>
-      Select!
+    <button className="button select-btn" onClick={() => {setSelectedRoomId(room.id); setPage("next")}}>
+      Select
     </button>
     <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
   </div>
 </div></>
               ))}
-
-              
               </div>
             </div>
         </div>
@@ -339,8 +303,8 @@ const RoomAvailabilityCheck = () => {
                 <h3><TbAirConditioning /> AC </h3>
                 </div>
   <div className="button-container">
-    <button className="button select-btn" onClick={() => setPage("next")}>
-      Select!
+    <button className="button select-btn" onClick={() =>{setSelectedRoomId(room.id); setPage("next")}}>
+      Select
     </button>
     <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
   </div>
@@ -370,8 +334,8 @@ const RoomAvailabilityCheck = () => {
                 <h3><TbAirConditioning /> AC </h3>
                 </div>
   <div className="button-container">
-    <button className="button select-btn" onClick={() => setPage("next")}>
-      Select!
+    <button className="button select-btn" onClick={() =>{setSelectedRoomId(room.id); setPage("next")}}>
+      Select
     </button>
     <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
   </div>
@@ -389,9 +353,9 @@ const RoomAvailabilityCheck = () => {
           <>
           <img src={room.image} alt="Suit Room" className="room-image" />               
               <div className="amenities">
-                  <h2 >Suite Room</h2>
-                  <div className="amenities-grid">
-                  <h3><FaWifi /> Free Wifi </h3>
+                <h2 >Suite Room</h2>
+                <div className="amenities-grid">
+                <h3><FaWifi /> Free Wifi </h3>
                 <h3><GiSlippers /> Slippers </h3>
                 <h3><GiTowel /> Towels</h3>
                 <h3><BiSolidFridge /> Fridge</h3>
@@ -402,8 +366,8 @@ const RoomAvailabilityCheck = () => {
                 <h3><TbAirConditioning /> AC </h3>
                 </div>
   <div className="button-container">
-    <button className="button select-btn" onClick={() => setPage("next")}>
-      Select!
+    <button className="button select-btn" onClick={() =>{setSelectedRoomId(room.id); setPage("next")}}>
+      Select
     </button>
     <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
   </div>
@@ -417,25 +381,27 @@ const RoomAvailabilityCheck = () => {
       </div>
     </CSSTransition>
   )}
-  {page === "next" && (
-    <CSSTransition key="next" classNames="page" timeout={300}>
-      <div className="page next"> {/* Added wrapper */}
-        <div className="inner">
+{page === "next" && (
+  <CSSTransition key="next" classNames="page" timeout={300}>
+    <div className="page next">
+      <div className="inner">
         <button className="button" onClick={() => setPage("start")}>
-            Back
-          </button>
-          {bookingDetails.map((room) => (
+          Back
+        </button>
+        {bookingDetails
+          .filter((room) => room.id === selectedRoomId) // Filter by selected room ID
+          .map((room) => (
             <div className="room_page" key={room.id}>
               <div className="room-card">
                 <img src={room.image} alt={room.name} className="room-image" />
-                <h3>{room.availableRooms} - Rooms Available</h3>
-                <div>
-                  <h3>{room.name}</h3>
+                <div className="amenities">
+                  <h2>{room.name}</h2>
                   <p>Selected Adults: {adults}</p>
                   <p>Selected Children: {children}</p>
                   <p>People to Book: {room.selectedPeople}</p>
                   <p>Selected Rooms: {room.selectedRooms}</p>
                   <p>Total Amount: ₹{room.totalAmount}</p>
+
                   <button
                     className="add-person btn1"
                     onClick={() => handleAddPerson(room.id)}
@@ -443,34 +409,46 @@ const RoomAvailabilityCheck = () => {
                   >
                     + Add Person
                   </button>
+
                   <button
-                    className="add-room btn1"
+                    className={`add-room btn1 ${
+                      room.availableRooms === room.selectedRooms || room.availableRooms === 0
+                        ? "disabled"
+                        : ""
+                    }`}
                     onClick={() => increaseRooms(room.id)}
+                    disabled={room.availableRooms === room.selectedRooms || room.availableRooms === 0}
                   >
                     + Add Room
                   </button>
+
+                  <br />
                   <button
-                    className={`btn1 ${
-                      room.selectedRooms === 0 ? "disabled" : ""
-                    }`}
+                    className={`btn1 ${room.selectedRooms === 0 ? "disabled" : ""}`}
                     onClick={() =>
-                      handlePayNow(room.totalAmount, room.id, room.availableRooms)
+                      handlePayNow(room.totalAmount, room.id, room.selectedRooms)
                     }
                     disabled={room.availableRooms === 0}
                   >
                     Book Now
                   </button>
+
+                  <div className="button-container">
+                    <div style={{ marginTop: "20px" }}>
+                      <h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>
+                        Rooms Left: {room.availableRooms}
+                      </h2>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           ))}
-          <button className="button" onClick={() => setPage("start")}>
-            Back
-          </button>
-        </div>
       </div>
-    </CSSTransition>
-  )}
+    </div>
+  </CSSTransition>
+)}
+
 </TransitionGroup>
 
           </>
