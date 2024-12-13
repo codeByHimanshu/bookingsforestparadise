@@ -20,6 +20,8 @@ const RoomAvailabilityCheck = () => {
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [selectedRoomId, setSelectedRoomId] = useState(null);
   const [message, setMessage] = useState("");
   const [showCards, setShowCards] = useState(false);
   const [roomData, setRoomData] = useState([]); // Correct state for room data
@@ -99,7 +101,7 @@ const RoomAvailabilityCheck = () => {
           ...room,
           selectedPeople: totalPeople,
           selectedRooms: rooms,
-          totalAmount: totalPeople * room.price,
+          totalAmount: rooms * room.price,
         }))
       );
       setShowCards(true);
@@ -110,7 +112,11 @@ const RoomAvailabilityCheck = () => {
       );
     }
   };
-
+  const handleSelectRoom = (room) => {
+    setSelectedRoomId(room.id);
+    setSelectedRoom(room);  // Set the selected room details here
+    setPage("next");
+  };
   const goBack = () => {
     setCheckInDate("");
     setCheckOutDate("");
@@ -124,14 +130,22 @@ const RoomAvailabilityCheck = () => {
   // Increase room logic
   const increaseRooms = (id) => {
     setBookingDetails((prevDetails) =>
-      prevDetails.map((room) => ({
-        ...room,
-        selectedRooms: room.selectedRooms + 1,
-        totalAmount: room.selectedPeople * room.price,
-      }))
+      prevDetails.map((room) => {
+        if (room.id === id) {
+          return {
+            ...room,
+            selectedRooms: room.selectedRooms + 1,
+            totalAmount: (room.selectedRooms + 1) * room.price,
+          };
+        }
+        return room; // Keep other rooms unchanged
+      })
     );
-    setRooms(rooms + 1);
   };
+  
+  
+  
+  
   // const handleBooking = async (roomId, selectedRooms) => {
   //   const roomsToUpdate = [
   //     {
@@ -180,7 +194,7 @@ const RoomAvailabilityCheck = () => {
           return {
             ...room,
             selectedPeople: newPeople,
-            totalAmount: newPeople * room.price,
+            totalAmount: room.selectedRooms * room.price,
           };
         }
         return room;
@@ -267,349 +281,198 @@ const RoomAvailabilityCheck = () => {
           </>
         ) : (
           <>
-            <TransitionGroup>
-              {page === "start" && (
-                <CSSTransition key="start" classNames="page" timeout={300}>
-                  <div>
-                    {" "}
-                    {/* Added wrapper */}
-                    <div className="page next">
-                      {" "}
-                      {/* Added wrapper */}
-                      <div className="inner">
-                        <button className="go-back" onClick={goBack}>
-                          Go Back
-                        </button>
-                        <div className="room_page">
-                          <div className="room-card">
-                            {bookingDetails
-                              .filter((room) => room.name === "Standard")
-                              .map((room) => (
-                                <>
-                                  <img
-                                    src={room.image}
-                                    alt="Standard"
-                                    className="room-image"
-                                  />
-                                  <div className="amenities">
-                                    <h2>Standard</h2>
-                                    <div className="amenities-grid">
-                                      <h3>
-                                        <FaWifi /> Free Wifi
-                                      </h3>
-                                      <h3>
-                                        <BsSafe /> Safe
-                                      </h3>
-                                      <h3>
-                                        <IoTvSharp /> TV
-                                      </h3>
-                                      <h3>
-                                        <MdDesk /> Desk
-                                      </h3>
-                                      <h3>
-                                        <TbAirConditioning /> AC
-                                      </h3>
-                                    </div>
-                                    <div className="button-container">
-                                      <button
-                                        className="button select-btn"
-                                        onClick={() => setPage("next")}
-                                      >
-                                        Select!
-                                      </button>
-                                      <div className="">
-                                        <h2
-                                          style={{
-                                            color:
-                                              room.availableRooms === 0
-                                                ? "red"
-                                                : "green",
-                                          }}
-                                        >
-                                          Rooms Left : {room.availableRooms}
-                                        </h2>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </>
-                              ))}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="inner">
-                        <div className="room_page">
-                          <div className="room-card">
-                            {bookingDetails
-                              .filter((room) => room.name === "Executive")
-                              .map((room) => (
-                                <>
-                                  <img
-                                    src={room.image}
-                                    alt="Executive"
-                                    className="room-image"
-                                  />
+          <TransitionGroup>
+  {page === "start" && (
+    <CSSTransition key="start" classNames="page" timeout={300}>
+      <div> {/* Added wrapper */}
+      <div className="page next"> {/* Added wrapper */}
+        <div className="inner">
+          <button className="go-back" onClick={goBack}>
+            Go Back
+          </button>
+            <div className="room_page">
+              <div className="room-card">
+            {bookingDetails .filter((room) => room.name === "Standard")
+        .map((room) => (
+              <>
+                <img src={room.image} alt="Standard" className="room-image" />
+                <div className="amenities">
+  <h2>Standard</h2>
+  <div className="amenities-grid">
+    <h3><FaWifi /> Free Wifi</h3>
+    <h3><BsSafe /> Safe</h3>
+    <h3><IoTvSharp /> TV</h3>
+    <h3><MdDesk /> Desk</h3>
+    <h3><TbAirConditioning /> AC</h3>
+  </div>
+  <div className="button-container">
+    <button className="button select-btn" onClick={() => setPage("next")}>
+      Select!
+    </button>
+    <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
+  </div>
+</div></>
+              ))}
 
-                                  <div className="amenities">
-                                    <h2>Executive</h2>
-                                    <div className="amenities-grid">
-                                      <h3>
-                                        <FaWifi /> Free Wifi{" "}
-                                      </h3>
-                                      <h3>
-                                        <GiSlippers /> Slippers{" "}
-                                      </h3>
-                                      <h3>
-                                        <GiTowel /> Towels
-                                      </h3>
-                                      <h3>
-                                        <BiSolidFridge /> Fridge
-                                      </h3>
-                                      <h3>
-                                        <IoTvSharp /> TV{" "}
-                                      </h3>
-                                      <h3>
-                                        <MdDesk /> Desk{" "}
-                                      </h3>
-                                      <h3>
-                                        <TbAirConditioning /> AC{" "}
-                                      </h3>
-                                    </div>
-                                    <div className="button-container">
-                                      <button
-                                        className="button select-btn"
-                                        onClick={() => setPage("next")}
-                                      >
-                                        Select!
-                                      </button>
-                                      <div className="">
-                                        <h2
-                                          style={{
-                                            color:
-                                              room.availableRooms === 0
-                                                ? "red"
-                                                : "green",
-                                          }}
-                                        >
-                                          Rooms Left : {room.availableRooms}
-                                        </h2>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </>
-                              ))}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="inner">
-                        <div className="room_page">
-                          <div className="room-card">
-                            {bookingDetails
-                              .filter((room) => room.name === "Business")
-                              .map((room) => (
-                                <>
-                                  <img
-                                    src={room.image}
-                                    alt="Business"
-                                    className="room-image"
-                                  />
-                                  <div className="amenities">
-                                    <h2>Business</h2>
-                                    <div className="amenities-grid">
-                                      <h3>
-                                        <FaWifi /> Free Wifi{" "}
-                                      </h3>
-                                      <h3>
-                                        <GiSlippers /> Slippers{" "}
-                                      </h3>
-                                      <h3>
-                                        <GiTowel /> Towels
-                                      </h3>
-                                      <h3>
-                                        <BiSolidFridge /> Fridge
-                                      </h3>
-                                      <h3>
-                                        <MdOutlineCoffeeMaker /> Coffee Maker
-                                      </h3>
-                                      <h3>
-                                        <IoTvSharp /> TV{" "}
-                                      </h3>
-                                      <h3>
-                                        <MdDesk /> Desk{" "}
-                                      </h3>
-                                      <h3>
-                                        <TbAirConditioning /> AC{" "}
-                                      </h3>
-                                    </div>
-                                    <div className="button-container">
-                                      <button
-                                        className="button select-btn"
-                                        onClick={() => setPage("next")}
-                                      >
-                                        Select!
-                                      </button>
-                                      <div className="">
-                                        <h2
-                                          style={{
-                                            color:
-                                              room.availableRooms === 0
-                                                ? "red"
-                                                : "green",
-                                          }}
-                                        >
-                                          Rooms Left : {room.availableRooms}
-                                        </h2>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </>
-                              ))}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="inner">
-                        <div className="room_page">
-                          <div className="room-card">
-                            {bookingDetails
-                              .filter((room) => room.name === "Suite Room")
-                              .map((room) => (
-                                <>
-                                  <img
-                                    src={room.image}
-                                    alt="Suit Room"
-                                    className="room-image"
-                                  />
-                                  <div className="amenities">
-                                    <h2>Suite Room</h2>
-                                    <div className="amenities-grid">
-                                      <h3>
-                                        <FaWifi /> Free Wifi{" "}
-                                      </h3>
-                                      <h3>
-                                        <GiSlippers /> Slippers{" "}
-                                      </h3>
-                                      <h3>
-                                        <GiTowel /> Towels
-                                      </h3>
-                                      <h3>
-                                        <BiSolidFridge /> Fridge
-                                      </h3>
-                                      <h3>
-                                        <MdLocalBar /> Mini Bar
-                                      </h3>
-                                      <h3>
-                                        <MdOutlineCoffeeMaker /> Coffee Maker
-                                      </h3>
-                                      <h3>
-                                        <IoTvSharp /> TV{" "}
-                                      </h3>
-                                      <h3>
-                                        <MdDesk /> Desk{" "}
-                                      </h3>
-                                      <h3>
-                                        <TbAirConditioning /> AC{" "}
-                                      </h3>
-                                    </div>
-                                    <div className="button-container">
-                                      <button
-                                        className="button select-btn"
-                                        onClick={() => setPage("next")}
-                                      >
-                                        Select!
-                                      </button>
-                                      <div className="">
-                                        <h2
-                                          style={{
-                                            color:
-                                              room.availableRooms === 0
-                                                ? "red"
-                                                : "green",
-                                          }}
-                                        >
-                                          Rooms Left : {room.availableRooms}
-                                        </h2>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </>
-                              ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CSSTransition>
-              )}
-              {page === "next" && (
-                <CSSTransition key="next" classNames="page" timeout={300}>
-                  <div className="page next">
-                    {" "}
-                    {/* Added wrapper */}
-                    <div className="inner">
-                      <button
-                        className="button"
-                        onClick={() => setPage("start")}
-                      >
-                        Back
-                      </button>
-                      {bookingDetails.map((room) => (
-                        <div className="room_page" key={room.id}>
-                          <div className="room-card">
-                            <img
-                              src={room.image}
-                              alt={room.name}
-                              className="room-image"
-                            />
-                            <h3>{room.availableRooms} - Rooms Available</h3>
-                            <div>
-                              <h3>{room.name}</h3>
-                              <p>Selected Adults: {adults}</p>
-                              <p>Selected Children: {children}</p>
-                              <p>People to Book: {room.selectedPeople}</p>
-                              <p>Selected Rooms: {room.selectedRooms}</p>
-                              <p>Total Amount: ₹{room.totalAmount}</p>
-                              <button
-                                className="add-person btn1"
-                                onClick={() => handleAddPerson(room.id)}
-                                disabled={room.availableRooms === 0}
-                              >
-                                + Add Person
-                              </button>
-                              <button
-                                className="add-room btn1"
-                                onClick={() => increaseRooms(room.id)}
-                              >
-                                + Add Room
-                              </button>
-                              <button
-                                className={`btn1 ${
-                                  room.selectedRooms === 0 ? "disabled" : ""
-                                }`}
-                                onClick={() =>
-                                  handlePayNow(
-                                    room.totalAmount,
-                                    room.id,
-                                    room.availableRooms
-                                  )
-                                }
-                                disabled={room.availableRooms === 0}
-                              >
-                                Book Now
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      <button
-                        className="button"
-                        onClick={() => setPage("start")}
-                      >
-                        Back
-                      </button>
-                    </div>
-                  </div>
-                </CSSTransition>
-              )}
-            </TransitionGroup>
+              
+              </div>
+            </div>
+        </div>
+        <div className="inner">
+            <div className="room_page">
+              <div className="room-card">
+                
+                {bookingDetails .filter((room) => room.name === "Executive")
+        .map((room) => (
+          <>
+          <img src={room.image} alt="Executive" className="room-image" />
+
+              <div className="amenities">
+              <h2>Executive</h2>
+                <div className="amenities-grid">
+                <h3><FaWifi /> Free Wifi </h3>
+                <h3><GiSlippers /> Slippers </h3>
+                <h3><GiTowel /> Towels</h3>
+                <h3><BiSolidFridge /> Fridge</h3>
+                <h3><IoTvSharp /> TV </h3>
+                <h3><MdDesk /> Desk </h3>
+                <h3><TbAirConditioning /> AC </h3>
+                </div>
+  <div className="button-container">
+    <button className="button select-btn" onClick={() => setPage("next")}>
+      Select!
+    </button>
+    <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
+  </div>
+</div></>
+              ))}
+              </div>
+            </div>
+        </div>
+        <div className="inner">
+            <div className="room_page">
+              <div className="room-card">
+                
+                {bookingDetails .filter((room) => room.name === "Business")
+        .map((room) => (
+          <>
+          <img src={room.image} alt="Business" className="room-image" />
+              <div className="amenities">
+                <h2 >Business</h2>
+                <div className="amenities-grid">
+                <h3><FaWifi /> Free Wifi </h3>
+                <h3><GiSlippers /> Slippers </h3>
+                <h3><GiTowel /> Towels</h3>
+                <h3><BiSolidFridge /> Fridge</h3>
+                <h3><MdOutlineCoffeeMaker /> Coffee Maker</h3>
+                <h3><IoTvSharp /> TV </h3>
+                <h3><MdDesk /> Desk </h3>
+                <h3><TbAirConditioning /> AC </h3>
+                </div>
+  <div className="button-container">
+    <button className="button select-btn" onClick={() => setPage("next")}>
+      Select!
+    </button>
+    <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
+  </div>
+</div></>
+              ))}
+              </div>
+            </div>
+        </div>
+        <div className="inner">
+            <div className="room_page">
+              <div className="room-card">
+
+                  {bookingDetails .filter((room) => room.name === "Suite Room")
+        .map((room) => (
+          <>
+          <img src={room.image} alt="Suit Room" className="room-image" />               
+              <div className="amenities">
+                  <h2 >Suite Room</h2>
+                  <div className="amenities-grid">
+                  <h3><FaWifi /> Free Wifi </h3>
+                <h3><GiSlippers /> Slippers </h3>
+                <h3><GiTowel /> Towels</h3>
+                <h3><BiSolidFridge /> Fridge</h3>
+                <h3><MdLocalBar /> Mini Bar</h3>
+                <h3><MdOutlineCoffeeMaker /> Coffee Maker</h3>
+                <h3><IoTvSharp /> TV </h3>
+                <h3><MdDesk /> Desk </h3>
+                <h3><TbAirConditioning /> AC </h3>
+                </div>
+  <div className="button-container">
+    <button className="button select-btn" onClick={() => setPage("next")}>
+      Select!
+    </button>
+    <div className=""><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
+  </div>
+</div></>
+              ))}
+              </div>
+            </div>
+        </div>
+      </div>
+        
+      </div>
+    </CSSTransition>
+  )}
+  {page === "next" && (
+    <CSSTransition key="next" classNames="page" timeout={300}>
+      <div className="page next"> {/* Added wrapper */}
+        <div className="inner">
+        <button className="button" onClick={() => setPage("start")}>
+            Back
+          </button>
+          {bookingDetails.map((room) => (
+            <div className="room_page" key={room.id}>
+              <div className="room-card">
+                <img src={room.image} alt={room.name} className="room-image" />
+                <h3>{room.availableRooms} - Rooms Available</h3>
+                <div>
+                  <h3>{room.name}</h3>
+                  <p>Selected Adults: {adults}</p>
+                  <p>Selected Children: {children}</p>
+                  <p>People to Book: {room.selectedPeople}</p>
+                  <p>Selected Rooms: {room.selectedRooms}</p>
+                  <p>Total Amount: ₹{room.totalAmount}</p>
+                  <button
+                    className="add-person btn1"
+                    onClick={() => handleAddPerson(room.id)}
+                    disabled={room.availableRooms === 0}
+                  >
+                    + Add Person
+                  </button>
+                  <button
+                    className="add-room btn1"
+                    onClick={() => increaseRooms(room.id)}
+                  >
+                    + Add Room
+                  </button>
+                  <button
+                    className={`btn1 ${
+                      room.selectedRooms === 0 ? "disabled" : ""
+                    }`}
+                    onClick={() =>
+                      handlePayNow(room.totalAmount, room.id, room.availableRooms)
+                    }
+                    disabled={room.availableRooms === 0}
+                  >
+                    Book Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+          <button className="button" onClick={() => setPage("start")}>
+            Back
+          </button>
+        </div>
+      </div>
+    </CSSTransition>
+  )}
+</TransitionGroup>
+
           </>
         )}
       </div>
