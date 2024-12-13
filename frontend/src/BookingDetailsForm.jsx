@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 const BookingDetailsForm = () => {
+  const navigate=useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -26,7 +27,7 @@ const BookingDetailsForm = () => {
       const data = await response.json();
       if (response.ok) {
         console.log("response:", data);
-        alert("booking done");
+        navigate("/booking")
       } else {
         console.error("error:", data);
         alert("please try again.");
@@ -74,45 +75,6 @@ const BookingDetailsForm = () => {
               type="text"
               name="phoneNumber"
               value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-              className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Type of Room
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Order ID
-            </label>
-            <input
-              type="text"
-              name="order_id"
-              value={formData.order_id}
-              onChange={handleChange}
-              required
-              className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Payment Id
-            </label>
-            <input
-              type="text"
-              name="order_id"
-              value={formData.order_id}
               onChange={handleChange}
               required
               className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

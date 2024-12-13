@@ -33,35 +33,14 @@ async function fetchId2(filter) {
     }
 } 
 async function migrate(req, res) {
-    const filter1 = { name: req.body.name };
-    const filter2 = { order_id: req.body.order_id };
     const {username,email,phoneNumber}=req.body;
-
+    console.log(req.body);
     try {
-        const id1 = await fetchId1(filter1);
-        const id2 = await fetchId2(filter2);
-        if (!id1) {
-            return res.status(404).send('No document found with this room id.');
-        }
-        if(!id2){
-            return res.status(404).send('No document found with this order id');
-        }
-        const RoomData = await Room.find({ _id: id1 });
-        const OrderData = await Order.find({ _id: id2 });
-        if ((!RoomData || RoomData.length === 0) || (!OrderData || OrderData.length === 0)) {
-            res.status(404).send('No matching Room or Order data found.');
-            return;
-        }
-        const newData = RoomData.map(doc => ({
-            name:doc.name,
-            order_id: OrderData[0].order_id,
-            username:username,
-            email:email,
-            phoneNumber:phoneNumber
-        }));
-        console.log(newData)
-        await Form.insertMany(newData);
-        res.status(200).send('Data migrated successfully.');
+        const newData=new Form({username,email,phoneNumber});
+        await newData.save();
+        res.status(201).json({
+            msg: "user is created successfully"
+        });        
     } catch (error) {
         console.error('Error:', error.message);
         res.status(500).send('Server error');

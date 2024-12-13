@@ -12,14 +12,6 @@ const formSchema=new mongoose.Schema({
     phoneNumber:{
         type:String,
         required:true
-    },
-    name:{
-        type:String,
-        required:true
-    },
-    order_id:{
-        type:String,
-        required:true
     }
     
 })
