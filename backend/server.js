@@ -29,14 +29,6 @@ const razorpay = new Razorpay({
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-// const transporter = nodemailer.createTransport({
-//     service: "gmail",
-//     auth: {
-//         user: process.env.ADMIN_EMAIL,
-//         pass: process.env.EMAIL_PASS,
-//     },
-// });
-
 const sendEmail = async (to, subject, body) => {
     if (!to) {
         console.log("No recipient email defined. Skipping email notification.");
@@ -45,26 +37,25 @@ const sendEmail = async (to, subject, body) => {
 
     const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
-        port: 465,     // Use 587 for TLS or 465 for SSL
+        port: 465, // Use 587 for TLS or 465 for SSL
         secure: true, // Set to true if using port 465
         auth: {
-          user: "himanshusingh993567@gmail.com",
-          pass: "mywa wdyu lweu pltg",
+            user: "himanshusingh993567@gmail.com", // Your email
+            pass: "mywa wdyu lweu pltg", // Your app password
         },
         tls: {
-            rejectUnauthorized: false,  // Allow self-signed certificates if necessary
+            rejectUnauthorized: false, // Allow self-signed certificates if necessary
         },
     });
 
+    // Email for the user
     const mailOptions = {
-        from: process.env.ADMIN_EMAIL,
-        to:"hsaktu261@gmail.com",
-        bcc: process.env.ADMIN_EMAIL,  
-        subject:"your stay is confirmed at RatanaInternational ",
-        html:body
+        from: "himanshusingh993567@gmail.com", // Replace with a verified email
+        to: to, // Send to the user
+        subject: subject,
+        html: body,
     };
-
-    try {
+      try {
         await transporter.sendMail(mailOptions);
         console.log("Email sent successfully to:", to);
     } catch (error) {
@@ -72,6 +63,9 @@ const sendEmail = async (to, subject, body) => {
         throw error;
     }
 };
+
+
+
 
 
 app.post("/create-order", async (req, res) => {
@@ -124,20 +118,23 @@ app.post("/verify-payment", async (req, res) => {
             order.status = "paid";
             order.payment_id = razorpay_payment_id;
             await order.save();
+            const userEmailBody = `
+            <h3>Your Booking is Confirmed</h3>
+            <p>Order ID: ${order.order_id}</p>
+            <p>Amount Paid: ₹${order.amount / 100}</p>
+            <p>Currency: ${order.currency}</p>
+            <p>Payment ID: ${order.payment_id}</p>
+        `;
 
-            // Booking success email content
-            const bookingDetails = `
-                <h3>Booking Confirmed</h3>
-                <p>Order ID: ${order.order_id}</p>
-                <p>Amount Paid: ₹${order.amount / 100}</p>
-                <p>Currency: ${order.currency}</p>
-                <p>Payment ID: ${order.payment_id}</p>
-                
-            `;
-
-            // Send email notifications
-            await sendEmail(process.env.EMAIL_USER, "Booking Confirmed", bookingDetails);
-            await sendEmail(process.env.ADMIN_EMAIL, "New Booking Received", bookingDetails);
+            const adminEmailBody = `
+            <h3>New Booking Received</h3>
+            <p>Order ID: ${order.order_id}</p>
+            <p>Amount Paid: ₹${order.amount / 100}</p>
+            <p>Currency: ${order.currency}</p>
+            <p>Payment ID: ${order.payment_id}</p>
+        `;
+            await sendEmail(process.env.EMAIL_USER, "Dear ..... your stay is confirmed", userEmailBody);
+            await sendEmail(process.env.ADMIN_EMAIL, "New Booking Received",adminEmailBody);
 
             res.status(200).json({ status: "ok" });
             console.log("Payment verification successful and emails sent.");
