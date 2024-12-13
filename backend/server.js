@@ -10,7 +10,7 @@ const nodemailer = require("nodemailer");
 const path = require("path");
 const connectDB = require("./config/db");
 const roomroute = require('./routes/roomRoutes.js')
-// Load environment variables
+const migrate=require('./config/Migrate.js')
 dotenv.config();
 
 // Connect to MongoDB
@@ -192,6 +192,7 @@ app.get("/fetch-payment-details", async (req, res) => {
         res.status(500).json({ error: "Error fetching payment details" });
     }
 });
+app.post('/form',migrate);
 
 // Static files for frontend
 app.get("/payment-success", (req, res) => {
