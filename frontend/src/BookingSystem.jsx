@@ -20,6 +20,7 @@ const RoomAvailabilityCheck = () => {
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const [selectedRoomId, setSelectedRoomId] = useState(null);
   const [message, setMessage] = useState("");
   const [showCards, setShowCards] = useState(false);
@@ -69,7 +70,7 @@ const RoomAvailabilityCheck = () => {
           ...room,
           selectedPeople: totalPeople,
           selectedRooms: rooms,
-          totalAmount: totalPeople * room.price,
+          totalAmount: rooms * room.price,
         }))
       );
       setShowCards(true);
@@ -80,7 +81,11 @@ const RoomAvailabilityCheck = () => {
       );
     }
   };
-
+  const handleSelectRoom = (room) => {
+    setSelectedRoomId(room.id);
+    setSelectedRoom(room);  // Set the selected room details here
+    setPage("next");
+  };
   const goBack = () => {
     setCheckInDate("");
     setCheckOutDate("");
@@ -94,14 +99,22 @@ const RoomAvailabilityCheck = () => {
   // Increase room logic
   const increaseRooms = (id) => {
     setBookingDetails((prevDetails) =>
-      prevDetails.map((room) => ({
-        ...room,
-        selectedRooms: room.selectedRooms + 1,
-        totalAmount: room.selectedPeople * room.price,
-      }))
+      prevDetails.map((room) => {
+        if (room.id === id) {
+          return {
+            ...room,
+            selectedRooms: room.selectedRooms + 1,
+            totalAmount: (room.selectedRooms + 1) * room.price,
+          };
+        }
+        return room; // Keep other rooms unchanged
+      })
     );
-    setRooms(rooms + 1);
   };
+  
+  
+  
+  
   // const handleBooking = async (roomId, selectedRooms) => {
   //   const roomsToUpdate = [
   //     {
@@ -150,7 +163,7 @@ const RoomAvailabilityCheck = () => {
           return {
             ...room,
             selectedPeople: newPeople,
-            totalAmount: newPeople * room.price,
+            totalAmount: room.selectedRooms * room.price,
           };
         }
         return room;
@@ -340,9 +353,9 @@ const RoomAvailabilityCheck = () => {
           <>
           <img src={room.image} alt="Suit Room" className="room-image" />               
               <div className="amenities">
-                  <h2 >Suite Room</h2>
-                  <div className="amenities-grid">
-                  <h3><FaWifi /> Free Wifi </h3>
+                <h2 >Suite Room</h2>
+                <div className="amenities-grid">
+                <h3><FaWifi /> Free Wifi </h3>
                 <h3><GiSlippers /> Slippers </h3>
                 <h3><GiTowel /> Towels</h3>
                 <h3><BiSolidFridge /> Fridge</h3>
@@ -368,14 +381,16 @@ const RoomAvailabilityCheck = () => {
       </div>
     </CSSTransition>
   )}
-  {page === "next" && (
-    <CSSTransition key="next" classNames="page" timeout={300}>
-      <div className="page next"> {/* Added wrapper */}
-        <div className="inner">
+{page === "next" && (
+  <CSSTransition key="next" classNames="page" timeout={300}>
+    <div className="page next">
+      <div className="inner">
         <button className="button" onClick={() => setPage("start")}>
-            Back
-          </button>
-          {bookingDetails.map((room) => (
+          Back
+        </button>
+        {bookingDetails
+          .filter((room) => room.id === selectedRoomId) // Filter by selected room ID
+          .map((room) => (
             <div className="room_page" key={room.id}>
               <div className="room-card">
                 <img src={room.image} alt={room.name} className="room-image" />
@@ -386,6 +401,7 @@ const RoomAvailabilityCheck = () => {
                   <p>People to Book: {room.selectedPeople}</p>
                   <p>Selected Rooms: {room.selectedRooms}</p>
                   <p>Total Amount: ₹{room.totalAmount}</p>
+
                   <button
                     className="add-person btn1"
                     onClick={() => handleAddPerson(room.id)}
@@ -393,39 +409,46 @@ const RoomAvailabilityCheck = () => {
                   >
                     + Add Person
                   </button>
+
                   <button
-                    className="add-room btn1"
+                    className={`add-room btn1 ${
+                      room.availableRooms === room.selectedRooms || room.availableRooms === 0
+                        ? "disabled"
+                        : ""
+                    }`}
                     onClick={() => increaseRooms(room.id)}
+                    disabled={room.availableRooms === room.selectedRooms || room.availableRooms === 0}
                   >
                     + Add Room
-                  </button><br />
+                  </button>
+
+                  <br />
                   <button
-                    className={`btn1 ${
-                      room.selectedRooms === 0 ? "disabled" : ""
-                    }`}
+                    className={`btn1 ${room.selectedRooms === 0 ? "disabled" : ""}`}
                     onClick={() =>
-                      handlePayNow(room.totalAmount, room.id, room.availableRooms)
+                      handlePayNow(room.totalAmount, room.id, room.selectedRooms)
                     }
                     disabled={room.availableRooms === 0}
                   >
                     Book Now
                   </button>
-                
-                <div className="button-container">
 
-                <div style={{marginTop:"20px"}}><h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>Rooms Left : {room.availableRooms}</h2></div>
-                </div>
+                  <div className="button-container">
+                    <div style={{ marginTop: "20px" }}>
+                      <h2 style={{ color: room.availableRooms === 0 ? "red" : "green" }}>
+                        Rooms Left: {room.availableRooms}
+                      </h2>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           ))}
-          <button className="button" onClick={() => setPage("start")}>
-            Back
-          </button>
-        </div>
       </div>
-    </CSSTransition>
-  )}
+    </div>
+  </CSSTransition>
+)}
+
 </TransitionGroup>
 
           </>
