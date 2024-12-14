@@ -4,15 +4,10 @@ const BookingDetailsForm = () => {
   const navigate=useNavigate();
   const [formData, setFormData] = useState({
     username: "",
-<<<<<<< HEAD
     email: "", 
     phoneNumber: "",
     name: "",
     order_id: "",
-=======
-    email: "",
-    phoneNumber: ""
->>>>>>> 4dddfb51750fe006e0345348f2519a0b1bdfb7ef
   });
   
   const handleChange = (e) => {
