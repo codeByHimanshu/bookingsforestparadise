@@ -4,7 +4,7 @@ const BookingDetailsForm = () => {
   const navigate=useNavigate();
   const [formData, setFormData] = useState({
     username: "",
-    email: "",
+    email: "", 
     phoneNumber: "",
     name: "",
     order_id: "",
@@ -90,6 +90,6 @@ const BookingDetailsForm = () => {
       </div>
     </div>
   );
-};
+}; 
 
 export default BookingDetailsForm;

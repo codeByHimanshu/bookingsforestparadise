@@ -10,10 +10,10 @@ const nodemailer = require("nodemailer");
 const path = require("path");
 const connectDB = require("./config/db");
 const roomroute = require('./routes/roomRoutes.js')
-// Load environment variables
+const migrate = require('./config/Migrate.js')
+
 dotenv.config();
 
-// Connect to MongoDB
 connectDB();
 
 const app = express();
@@ -22,7 +22,7 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/api/rooms',roomroute)
+app.use('/api/rooms', roomroute)
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -55,7 +55,7 @@ const sendEmail = async (to, subject, body) => {
         subject: subject,
         html: body,
     };
-      try {
+    try {
         await transporter.sendMail(mailOptions);
         console.log("Email sent successfully to:", to);
     } catch (error) {
@@ -77,7 +77,7 @@ app.post("/create-order", async (req, res) => {
             amount: amount * 100,
             currency,
             receipt,
-          
+
         };
 
         const order = await razorpay.orders.create(options);
@@ -117,24 +117,80 @@ app.post("/verify-payment", async (req, res) => {
             // Update order status to 'paid'
             order.status = "paid";
             order.payment_id = razorpay_payment_id;
-            await order.save();
+            await order.save();        
             const userEmailBody = `
-            <h3>Your Booking is Confirmed</h3>
-            <p>Order ID: ${order.order_id}</p>
-            <p>Amount Paid: ₹${order.amount / 100}</p>
-            <p>Currency: ${order.currency}</p>
-            <p>Payment ID: ${order.payment_id}</p>
-        `;
+    <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
+        <h2 style="color: #4CAF50; text-align: center;">🎉 Booking Confirmed! 🎉</h2>
+        <p style="font-size: 16px; color: #555;">Dear ${order.name},</p>
+        <p style="font-size: 16px; color: #555;">Thank you for choosing Ratana International. We're thrilled to host you!</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr style="background-color: #4CAF50; color: white; text-align: left;">
+                <th style="padding: 10px;">Details</th>
+                <th style="padding: 10px;">Information</th>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Order ID:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order_id}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Amount Paid:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.amount / 100}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Currency:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.currency}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment ID:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
+            </tr>
+        </table>
+
+        <p style="font-size: 14px; color: #777;">We can't wait to host you! For any questions, feel free to contact us at <a href="mailto:support@ratana.international" style="color: #4CAF50; text-decoration: none;">support@ratana.international</a>.</p>
+
+        <p style="text-align: center; font-size: 14px; color: #777;">📍 Ratana International, Your Luxury Destination</p>
+    </div>
+`;
 
             const adminEmailBody = `
-            <h3>New Booking Received</h3>
-            <p>Order ID: ${order.order_id}</p>
-            <p>Amount Paid: ₹${order.amount / 100}</p>
-            <p>Currency: ${order.currency}</p>
-            <p>Payment ID: ${order.payment_id}</p>
-        `;
-            await sendEmail(process.env.EMAIL_USER, "Dear ..... your stay is confirmed", userEmailBody);
-            await sendEmail(process.env.ADMIN_EMAIL, "New Booking Received",adminEmailBody);
+    <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f1f1f1;">
+        <h2 style="color: #FF5722; text-align: center;">📬 New Booking Alert</h2>
+        <p style="font-size: 16px; color: #555;">Dear Admin,</p>
+        <p style="font-size: 16px; color: #555;">You have received a new booking. Here are the details:</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr style="background-color: #FF5722; color: white; text-align: left;">
+                <th style="padding: 10px;">Details</th>
+                <th style="padding: 10px;">Information</th>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Order ID:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order_id}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Amount Paid:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.amount / 100}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Currency:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.currency}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment ID:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
+            </tr>
+        </table>
+
+        <p style="font-size: 14px; color: #777;">Please log into the admin dashboard for more details. If you have any questions, contact the support team.</p>
+
+        <p style="text-align: center; font-size: 14px; color: #777;">📍 Admin Dashboard - Ratana International</p>
+    </div>
+`;
+
+
+            await sendEmail(process.env.EMAIL_USER, "Dear Guest your stay is confirmed", userEmailBody);
+            await sendEmail(process.env.ADMIN_EMAIL, "New Booking Received", adminEmailBody);
 
             res.status(200).json({ status: "ok" });
             console.log("Payment verification successful and emails sent.");
@@ -145,8 +201,6 @@ app.post("/verify-payment", async (req, res) => {
                 <p>Order ID: ${razorpay_order_id}</p>
                 <p>Reason: Payment verification failed.</p>
             `;
-
-            // Notify user and admin
             if (order) {
                 await sendEmail(order.notes.EMAIL_USER, "Booking Failed", failureDetails);
             }
@@ -190,6 +244,7 @@ app.get("/fetch-payment-details", async (req, res) => {
     }
 });
 
+app.post('/form', migrate)
 // Static files for frontend
 app.get("/payment-success", (req, res) => {
     res.sendFile(path.join(__dirname, "payment.html"));
