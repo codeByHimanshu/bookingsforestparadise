@@ -1,7 +1,7 @@
 const mongoose =require('mongoose');
 
 const BookingsDetailsSchema1=new mongoose.Schema({
-    checkInData:{
+    checkInDate:{
         type:Date,
         required:true,
     },checkOutDate:{
@@ -22,5 +22,5 @@ const BookingsDetailsSchema1=new mongoose.Schema({
     }
 
 });
-const BookingDetail=mongoose.model('BookingDetail',BookingsDetailsSchema1);
-module.exports=BookingDetail;
+const BookingSchema=mongoose.model('BookingDetails',BookingsDetailsSchema1);
+module.exports=BookingSchema;

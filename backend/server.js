@@ -11,7 +11,7 @@ const path = require("path");
 const connectDB = require("./config/db");
 const roomroute = require('./routes/roomRoutes.js')
 const migrate = require('./config/Migrate.js')
-
+// Load environment variables
 dotenv.config();
 
 connectDB();
@@ -243,8 +243,7 @@ app.get("/fetch-payment-details", async (req, res) => {
         res.status(500).json({ error: "Error fetching payment details" });
     }
 });
-
-app.post('/form', migrate)
+app.post('/form',migrate);
 // Static files for frontend
 app.get("/payment-success", (req, res) => {
     res.sendFile(path.join(__dirname, "payment.html"));
