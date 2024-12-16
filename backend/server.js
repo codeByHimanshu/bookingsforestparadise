@@ -6,8 +6,8 @@ const Razorpay = require("razorpay");
 const bodyParser = require("body-parser");
 const { validateWebhookSignature } = require("razorpay/dist/utils/razorpay-utils.js");
 const Order = require("./models/Order.js");
-const BookinDetails=require("./models/BookingDetails.js");
-const Room=require("./models/Room.js")
+const BookinDetails = require("./models/BookingDetails.js");
+const Room = require("./models/Room.js")
 const nodemailer = require("nodemailer");
 const path = require("path");
 const connectDB = require("./config/db");
@@ -114,7 +114,7 @@ app.post("/verify-payment", async (req, res) => {
             // Update order status to 'paid'
             order.status = "paid";
             order.payment_id = razorpay_payment_id;
-            await order.save();        
+            await order.save();
             const userEmailBody = `
     <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
         <h2 style="color: #4CAF50; text-align: center;">🎉 Booking Confirmed! 🎉</h2>
@@ -152,10 +152,37 @@ app.post("/verify-payment", async (req, res) => {
 
             const adminEmailBody = `
             <h3>New Booking Received</h3>
-            <p>Order ID: ${order.order_id}</p>
-            <p>Amount Paid: ₹${order.amount / 100}</p>
-            <p>Currency: ${order.currency}</p>
-            <p>Payment ID: ${order.payment_id}</p>
+
+            <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f1f1f1;">
+        <h2 style="color: #FF5722; text-align: center;">📬 New Booking Alert</h2>
+        <p style="font-size: 16px; color: #555;">Dear Admin,</p>
+        <p style="font-size: 16px; color: #555;">You have received a new booking. Here are the details:</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr style="background-color: #FF5722; color: white; text-align: left;">
+                <th style="padding: 10px;">Details</th>
+                <th style="padding: 10px;">Information</th>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Order ID:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order_id}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Amount Paid:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.amount / 100}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Currency:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.currency}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment ID:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
+            </tr>
+        </table>
+        <p style="font-size: 14px; color: #777;">Please log into the admin dashboard for more details. If you have any questions, contact the support team.</p>
+        <p style="text-align: center; font-size: 14px; color: #777;">📍 Admin Dashboard - Ratana International</p>
+    </div>
         `;
             await sendEmail(process.env.EMAIL_USER, "Dear ..... your stay is confirmed", userEmailBody);
             await sendEmail(process.env.ADMIN_EMAIL, "New Booking Received", adminEmailBody);
@@ -215,10 +242,10 @@ app.post('/form', migrate);
 
 // test 
 
-app.get('/order-detail',(req,res)=>{
+app.get('/order-detail', (req, res) => {
     res.json(Order);
 })
-app.get('/booking-detail',(req,res)=>{
+app.get('/booking-detail', (req, res) => {
     res.json(BookinDetails)
 })
 
