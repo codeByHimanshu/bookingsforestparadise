@@ -6,12 +6,16 @@ const Razorpay = require("razorpay");
 const bodyParser = require("body-parser");
 const { validateWebhookSignature } = require("razorpay/dist/utils/razorpay-utils.js");
 const Order = require("./models/Order.js");
+const BookinDetails = require("./models/BookingDetails.js");
+const Room = require("./models/Room.js")
 const nodemailer = require("nodemailer");
 const path = require("path");
 const connectDB = require("./config/db");
 const roomroute = require('./routes/roomRoutes.js')
 const migrate = require('./config/Migrate.js')
+
 // Load environment variables
+
 dotenv.config();
 
 connectDB();
@@ -64,22 +68,15 @@ const sendEmail = async (to, subject, body) => {
     }
 };
 
-
-
-
-
 app.post("/create-order", async (req, res) => {
 
     try {
-        const { amount, currency, receipt, name } = req.body;
-
+        const { amount, currency, receipt, notes } = req.body;
         const options = {
             amount: amount * 100,
             currency,
             receipt,
-
         };
-
         const order = await razorpay.orders.create(options);
 
         // Save order to MongoDB
@@ -117,7 +114,7 @@ app.post("/verify-payment", async (req, res) => {
             // Update order status to 'paid'
             order.status = "paid";
             order.payment_id = razorpay_payment_id;
-            await order.save();        
+            await order.save();
             const userEmailBody = `
     <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
         <h2 style="color: #4CAF50; text-align: center;">🎉 Booking Confirmed! 🎉</h2>
@@ -154,7 +151,9 @@ app.post("/verify-payment", async (req, res) => {
 `;
 
             const adminEmailBody = `
-    <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f1f1f1;">
+            <h3>New Booking Received</h3>
+
+            <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f1f1f1;">
         <h2 style="color: #FF5722; text-align: center;">📬 New Booking Alert</h2>
         <p style="font-size: 16px; color: #555;">Dear Admin,</p>
         <p style="font-size: 16px; color: #555;">You have received a new booking. Here are the details:</p>
@@ -181,15 +180,11 @@ app.post("/verify-payment", async (req, res) => {
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
             </tr>
         </table>
-
         <p style="font-size: 14px; color: #777;">Please log into the admin dashboard for more details. If you have any questions, contact the support team.</p>
-
         <p style="text-align: center; font-size: 14px; color: #777;">📍 Admin Dashboard - Ratana International</p>
     </div>
-`;
-
-
-            await sendEmail(process.env.EMAIL_USER, "Dear Guest your stay is confirmed", userEmailBody);
+        `;
+            await sendEmail(process.env.EMAIL_USER, "Dear ..... your stay is confirmed", userEmailBody);
             await sendEmail(process.env.ADMIN_EMAIL, "New Booking Received", adminEmailBody);
 
             res.status(200).json({ status: "ok" });
@@ -243,7 +238,17 @@ app.get("/fetch-payment-details", async (req, res) => {
         res.status(500).json({ error: "Error fetching payment details" });
     }
 });
-app.post('/form',migrate);
+app.post('/form', migrate);
+
+// test 
+
+app.get('/order-detail', (req, res) => {
+    res.json(Order);
+})
+app.get('/booking-detail', (req, res) => {
+    res.json(BookinDetails)
+})
+
 // Static files for frontend
 app.get("/payment-success", (req, res) => {
     res.sendFile(path.join(__dirname, "payment.html"));
