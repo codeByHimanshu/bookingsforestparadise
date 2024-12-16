@@ -4,7 +4,8 @@ const BookingsDetailsSchema1=new mongoose.Schema({
     checkInDate:{
         type:Date,
         required:true,
-    },checkOutDate:{
+    },
+    checkOutDate:{
         type:Date,
         required:true
     },

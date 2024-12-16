@@ -6,11 +6,13 @@ const Razorpay = require("razorpay");
 const bodyParser = require("body-parser");
 const { validateWebhookSignature } = require("razorpay/dist/utils/razorpay-utils.js");
 const Order = require("./models/Order.js");
+const BookinDetails=require("./models/BookingDetails.js");
+const Room=require("./models/Room.js")
 const nodemailer = require("nodemailer");
 const path = require("path");
 const connectDB = require("./config/db");
 const roomroute = require('./routes/roomRoutes.js')
-const migrate=require('./config/Migrate.js')
+const migrate = require('./config/Migrate.js')
 dotenv.config();
 
 // Connect to MongoDB
@@ -22,7 +24,7 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/api/rooms',roomroute)
+app.use('/api/rooms', roomroute)
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -55,7 +57,7 @@ const sendEmail = async (to, subject, body) => {
         subject: subject,
         html: body,
     };
-      try {
+    try {
         await transporter.sendMail(mailOptions);
         console.log("Email sent successfully to:", to);
     } catch (error) {
@@ -64,22 +66,15 @@ const sendEmail = async (to, subject, body) => {
     }
 };
 
-
-
-
-
 app.post("/create-order", async (req, res) => {
 
     try {
         const { amount, currency, receipt, notes } = req.body;
-
         const options = {
             amount: amount * 100,
             currency,
             receipt,
-          
         };
-
         const order = await razorpay.orders.create(options);
 
         // Save order to MongoDB
@@ -134,7 +129,7 @@ app.post("/verify-payment", async (req, res) => {
             <p>Payment ID: ${order.payment_id}</p>
         `;
             await sendEmail(process.env.EMAIL_USER, "Dear ..... your stay is confirmed", userEmailBody);
-            await sendEmail(process.env.ADMIN_EMAIL, "New Booking Received",adminEmailBody);
+            await sendEmail(process.env.ADMIN_EMAIL, "New Booking Received", adminEmailBody);
 
             res.status(200).json({ status: "ok" });
             console.log("Payment verification successful and emails sent.");
@@ -189,7 +184,16 @@ app.get("/fetch-payment-details", async (req, res) => {
         res.status(500).json({ error: "Error fetching payment details" });
     }
 });
-app.post('/form',migrate);
+app.post('/form', migrate);
+
+// test 
+
+app.get('/order-detail',(req,res)=>{
+    res.json(Order);
+})
+app.get('/booking-detail',(req,res)=>{
+    res.json(BookinDetails)
+})
 
 // Static files for frontend
 app.get("/payment-success", (req, res) => {
