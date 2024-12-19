@@ -10,7 +10,8 @@ import BookingSystem from "./BookingSystem.jsx";
 import RoomCard from "./components/Roomcard.jsx";
 import BookingDetailsForm from "./BookingDetailsForm.jsx";
 import AutofillForm from "./AutoFillForm.jsx";
-import { FormProvider } from "./FormContext.jsx";
+import RoomSearch from "./TestComponents/RoomSearch.jsx";
+import { FormContextProvider } from "./context/FormContextProvider.jsx";
 
 // Dummy data for the hotel
 const hotelData = {
@@ -32,7 +33,7 @@ const hotelData = {
 const App = () => {
   return (
     <BrowserRouter>
-      <FormProvider>
+      <FormContextProvider>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/card" element={<RoomCard />} />
@@ -44,8 +45,9 @@ const App = () => {
           <Route path="/booking" element={<BookingSystem />} />
           {/* <Route path='/form' element={<BookingDetailsForm/>}/> */}
           <Route path="/form" element={<AutofillForm />} />
+          <Route path="search" element={<RoomSearch/>}/>
         </Routes>
-      </FormProvider>
+      </FormContextProvider>
     </BrowserRouter>
   );
 };

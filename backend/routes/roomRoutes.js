@@ -116,6 +116,28 @@ router.post('/save-booking-details', async (req, res) => {
     });
   }
 });
+router.get('/room-type', async (req, res) => {
+  const { name } = req.query;
+  if (!name) {
+    return res.status(404).json({
+      error: "Query parameter is required"
+    })
+  }
+  try {
+    const rooms = await Room.find({ name: new RegExp(name, 'i') });
+    if (rooms.length === 0) {
+      return res.status(400).json({
+        message: "no room find with this id"
+      })
+    }
+    res.status(201).json({ rooms })
+  } catch (error) {
+    return res.status(400).json({
+      error
+    })
+  }
+
+})
 
 module.exports = router;
 
