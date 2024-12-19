@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Await, useNavigate } from "react-router-dom";
 import "./assets/css/BookingSystem.css";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Header from "./components/Header";
@@ -24,20 +25,27 @@ const RoomAvailabilityCheck = () => {
   const [selectedRoomId, setSelectedRoomId] = useState(null);
   const [message, setMessage] = useState("");
   const [showCards, setShowCards] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [roomData, setRoomData] = useState([]); // Correct state for room data
   const [bookingDetails, setBookingDetails] = useState([]);
   const [page, setPage] = useState("start");
+  const [selectedRoomData, setSelectedRoomData] = useState([]);
 
-  const handlePayNow = async (totalAmount, roomId, selectedRooms) => {
-    if (!totalAmount) {
-      alert("Please choose a room.");
-      return;
-    }
-    localStorage.setItem("roomId", roomId); // Save room ID
-    localStorage.setItem("selectedRooms", selectedRooms); // Save selected rooms
-    await initializePayment(totalAmount, roomId, selectedRooms); // Pass data to payment function
-  };
+  const navigate = useNavigate()
 
+  // const handlePayNow = async (totalAmount, roomId, selectedRooms) => {
+  //   if (!totalAmount) {
+  //     alert("Please choose a room.");
+  //     return;
+  //   }
+  //   localStorage.setItem("roomId", roomId); // Save room ID
+  //   localStorage.setItem("selectedRooms", selectedRooms); // Save selected rooms
+  //   await initializePayment(totalAmount, roomId, selectedRooms); // Pass data to payment function
+  // };
+  const bookingformclick = () => {
+    setShowForm(!showForm);
+    setShowCards(!showCards)
+  }
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -81,6 +89,7 @@ const RoomAvailabilityCheck = () => {
       );
     }
   };
+
   const handleSelectRoom = (room) => {
     setSelectedRoomId(room.id);
     setSelectedRoom(room); // Set the selected room details here
@@ -96,77 +105,31 @@ const RoomAvailabilityCheck = () => {
     setShowCards(false);
   };
 
-  // Increase room logic
-  const increaseRooms = (id) => {
-    setBookingDetails((prevDetails) =>
-      prevDetails.map((room) => {
-        if (room.id === id) {
-          return {
-            ...room,
-            selectedRooms: room.selectedRooms + 1,
-            totalAmount: (room.selectedRooms + 1) * room.price,
-          };
-        }
-        return room; // Keep other rooms unchanged
-      })
-    );
+  const bookNow = async (name) => {
+    try {
+      // Ensure roomName is passed as part of the URL correctly
+      const response = await fetch(`http://localhost:5000/api/rooms/room-type?name=${encodeURIComponent(name)}`);
+      const data = await response.json();
+      console.log(data);
+      
+      console.log("Rooms:", rooms, "Price:", data.rooms[0].price,"name:",data.rooms[0].name);
+      
+      if (data.error) {
+        console.error(data.error); // Log the error message if available
+      } else {
+        const roomCount = parseInt(rooms) || 0; // Fallback to 0 if rooms is undefined
+        const roomPrice = parseFloat(data.rooms[0].price) || 0;
+        setSelectedRoomData({
+          ...data,
+          totalAmount: roomCount * roomPrice,// Calculate totalAmount here based on the number of rooms
+        }); // Store the fetched room data
+      }
+    } catch (error) {
+      console.error("Error fetching room data:", error);
+    }
   };
 
-  // const handleBooking = async (roomId, selectedRooms) => {
-  //   const roomsToUpdate = [
-  //     {
-  //       roomId, // Only the specific room's ID
-  //       selectedRooms, // Only the specific room's selected rooms
-  //     },
-  //   ];
 
-  //   console.log("Rooms to update:", roomsToUpdate);
-
-  //   try {
-  //     const response = await fetch(
-  //       "http://localhost:5000/api/rooms/update-availability",
-  //       {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({ roomsToUpdate }),
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       alert("Booking successful! Rooms have been updated.");
-  //     } else {
-  //       alert("Rooms Unavailable");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error during booking:", error);
-  //     alert("An error occurred during the booking process.");
-  //   }
-  // };
-
-  // Add person logic
-  const handleAddPerson = (id) => {
-    setBookingDetails((prevDetails) =>
-      prevDetails.map((room) => {
-        if (room.id === id) {
-          const newPeople = room.selectedPeople + 1;
-          const maxCapacity = room.selectedRooms * 4;
-
-          if (newPeople > maxCapacity) {
-            alert(
-              `Please increase the number of rooms! ${room.selectedRooms} room(s) can only accommodate ${maxCapacity} people.`
-            );
-            return room;
-          }
-          return {
-            ...room,
-            selectedPeople: newPeople,
-            totalAmount: room.selectedRooms * room.price,
-          };
-        }
-        return room;
-      })
-    );
-  };
 
   return (
     <>
@@ -555,50 +518,22 @@ const RoomAvailabilityCheck = () => {
                                 <p>People to Book: {room.selectedPeople}</p>
                                 <p>Selected Rooms: {room.selectedRooms}</p>
                                 <p>Total Amount: ₹{room.totalAmount}</p>
-
-                                <button
-                                  className="add-person btn1"
-                                  onClick={() => handleAddPerson(room.id)}
-                                  disabled={room.availableRooms === 0}
-                                >
-                                  + Add Person
-                                </button>
-
-                                <button
-                                  className={`add-room btn1 ${
-                                    room.availableRooms ===
-                                      room.selectedRooms ||
-                                    room.availableRooms === 0
-                                      ? "disabled"
-                                      : ""
-                                  }`}
-                                  onClick={() => increaseRooms(room.id)}
-                                  disabled={
-                                    room.availableRooms ===
-                                      room.selectedRooms ||
-                                    room.availableRooms === 0
-                                  }
-                                >
-                                  + Add Room
-                                </button>
-
                                 <br />
-                                <button
-                                  className={`btn1 ${
-                                    room.selectedRooms === 0 ? "disabled" : ""
-                                  }`}
-                                  onClick={() =>
-                                    handlePayNow(
-                                      room.totalAmount,
-                                      room.id,
-                                      room.selectedRooms
-                                    )
-                                  }
-                                  disabled={room.availableRooms === 0}
-                                >
-                                  Book Now
-                                </button>
-
+                               
+                                    <button
+                                      className={`btn1 ${room.availableRooms === 0 ? "disabled" : ""}`}
+                                      onClick={() => {
+                                        console.log(name)
+                                        // console.log(selectedRoomData.name)
+                                        // console.log(selectedRoom.name)
+                                        bookNow(room.name); // Pass the room's name dynamically
+                                        bookingformclick(); // Call your form display function
+                                      }}
+                                      disabled={room.availableRooms === 0}
+                                    >
+                                      Book Now
+                                    </button>
+                               
                                 <div className="button-container">
                                   <div style={{ marginTop: "20px" }}>
                                     <h2
@@ -625,6 +560,175 @@ const RoomAvailabilityCheck = () => {
           </>
         )}
       </div>
+      {showForm &&
+        selectedRoomData &&
+        <div className="page next">
+          <div className="inner">
+            <div className="flex justify-center items-center h-screen bg-gray-100">
+              <form
+                // onSubmit={handleSubmit}
+                className="bg-white p-8 shadow-lg rounded-lg w-96"
+              >
+                <h2 className="text-2xl font-bold text-gray-700 mb-4 text-center">
+                  Edit Order Details
+                </h2>
+                <div className="mb-4">
+                  <label
+                    htmlFor="username"
+                    className="block text-gray-600 font-medium mb-2"
+                  >
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    // onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label
+                    htmlFor="email"
+                    className="block text-gray-600 font-medium mb-2"
+                  >
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    // onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label
+                    htmlFor="Phone Number"
+                    className="block text-gray-600 font-medium mb-2"
+                  >
+                    Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    // onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                {/* ----------------------------------------------------------------------------- */}
+
+
+                <div className="mb-4">
+                  <label
+                    htmlFor="checkinDate"
+                    className="block text-gray-600 font-medium mb-2"
+                  >
+                    CheckInDate
+                  </label>
+                  <input
+                    type="date"
+                    id="checkinDate"
+                    name="checkinDate"
+                    defaultValue={checkInDate}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+
+
+                <div className="mb-4">
+                  <label
+                    htmlFor="checkoutDate"
+                    className="block text-gray-600 font-medium mb-2"
+                  >
+                    CheckOutDate
+                  </label>
+                  <input
+                    type="date"
+                    id="checkOutDate"
+                    name="checkOutDate"
+                    defaultValue={checkOutDate}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="NoOfAdults"
+                    className="block text-gray-600 font-medium mb-2"
+                  >
+                    NoOfAdults
+                  </label>
+                  <input
+                    type="text"
+                    id="NoOfAdults"
+                    name="NoOfAdults"
+                    defaultValue={adults}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="NoOfChildren"
+                    className="block text-gray-600 font-medium mb-2"
+                  >
+                    NoOfChildren
+                  </label>
+                  <input
+                    type="text"
+                    id="NoOfChildren"
+                    name="NoOfChildren"
+                    defaultValue={children}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="NoOfRooms"
+                    className="block text-gray-600 font-medium mb-2"
+                  >
+                    NoOfRooms
+                  </label>
+                  <input
+                    type="text"
+                    id="NoOfRooms"
+                    name="NoOfRooms"
+                    defaultValue={rooms}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="amount"
+                    className="block text-gray-600 font-medium mb-2"
+                  >
+                    Amount
+                  </label>
+                  <input
+                    type="number"
+                    id="amount"
+                    name="amount"
+                    defaultValue={selectedRoomData.totalAmount}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200"
+                >
+                  Submit
+                </button>
+              </form>
+        
+            </div>
+          </div>
+        </div>
+
+      }
+
     </>
   );
 };
