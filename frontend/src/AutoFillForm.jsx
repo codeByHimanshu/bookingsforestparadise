@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Header from "./components/Header";
+import { initializePayment } from "./utils/peyment";
+
 
 const AutofillForm = ({Data  }) => {
   console.log(Data);
@@ -11,10 +14,10 @@ const AutofillForm = ({Data  }) => {
     checkInDate: new Date(),
     checkOutDate: new Date(),
     NoOfAdults: 0,
-    NoOfAdults: 0,
     NoOfChildren: 0,
     NoOfRooms: 0,
   });
+<<<<<<< HEAD
   const [userData, setUserData] = useState({
     username: "",
     email: "",
@@ -25,6 +28,16 @@ const AutofillForm = ({Data  }) => {
   //     if (Data) setBookingData(Data);
   //   }
   // }, [Data]);
+=======
+  const handlePayNow = async (totalAmount, roomId, selectedRooms) => {
+    if (!totalAmount) {
+      alert("Please choose a room.");
+      return;
+    }
+    localStorage.setItem("roomId", roomId); // Save room ID
+    localStorage.setItem("selectedRooms", selectedRooms); // Save selected rooms
+  }
+>>>>>>> 9350bd4fc26f87eef702ce414e42b24725b09159
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +76,7 @@ const AutofillForm = ({Data  }) => {
   };
 
   return (
+<<<<<<< HEAD
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <form
         onSubmit={handleSubmit}
@@ -249,6 +263,13 @@ const AutofillForm = ({Data  }) => {
         </button>
       </form>
     </div>
+=======
+    <>
+   <Header />
+  
+
+      </>
+>>>>>>> 9350bd4fc26f87eef702ce414e42b24725b09159
   );
 };
 

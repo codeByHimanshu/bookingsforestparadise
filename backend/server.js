@@ -64,14 +64,14 @@ const sendEmail = async (to, subject, body) => {
         console.log("Email sent successfully to:", to);
     } catch (error) {
         console.error("Error sending email:", error);
-        throw error;
+        throw error;  
     }
 };
 
 app.post("/create-order", async (req, res) => {
 
     try {
-        const { amount, currency, receipt, notes } = req.body;
+        const { amount, currency, receipt, notes, checkInDate, checkOutDate, NoOfAdults, NoOfChildren, NoOfRooms, email } = req.body;
         const options = {
             amount: amount * 100,
             currency,
@@ -85,7 +85,7 @@ app.post("/create-order", async (req, res) => {
             amount: order.amount,
             currency: order.currency,
             receipt: order.receipt,
-            notes: order.notes,
+            notes: { checkInDate, checkOutDate, NoOfAdults, NoOfChildren, NoOfRooms, email },
             status: order.status,
         });
         await newOrder.save();
