@@ -31,7 +31,7 @@ const hotelData = {
 const App = () => {
   return (
     <BrowserRouter>
-      <FormProvider>
+      <FormContextProvider>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/card" element={<RoomCard />} />
@@ -43,8 +43,9 @@ const App = () => {
           <Route path="/booking" element={<BookingSystem />} />
    
      
+>>>>>>> 9350bd4fc26f87eef702ce414e42b24725b09159
         </Routes>
-      </FormProvider>
+      </FormContextProvider>
     </BrowserRouter>
   );
 };
