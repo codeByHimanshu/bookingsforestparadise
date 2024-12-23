@@ -14,9 +14,6 @@ import { IoTvSharp } from "react-icons/io5";
 import { GiSlippers } from "react-icons/gi";
 import { TbAirConditioning } from "react-icons/tb";
 import { MdDesk } from "react-icons/md";
-
-
-
 const RoomAvailabilityCheck = () => {
   const today = new Date().toISOString().split("T")[0];
   const [checkInDate, setCheckInDate] = useState("");
@@ -73,7 +70,6 @@ const RoomAvailabilityCheck = () => {
     setShowCards(!showCards)
   }
   useEffect(() => {
-    console.log("use effect is called");
     const fetchRooms = async () => {
       try {
         const response = await fetch("http://localhost:5000/api/rooms");
@@ -86,30 +82,8 @@ const RoomAvailabilityCheck = () => {
     fetchRooms();
   }, []);
 
-  useEffect(() => {
-    if (!name) return;
-
-    const fetchRooms = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/api/rooms/room-type",
-          { params:{ name:"Business"} }
-        );
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
-        }
-        const data = await response.json();
-      } catch (err) {
-        console.log("there is an error on fetching the data");
-      }
-    };
-    fetchRooms();
-  }, []);
-
-
-  console.log(roomData);
+  // Check availability logic
   const checkAvailability = () => {
-    console.log("check avalablilty is called");
     const totalPeople = parseInt(adults) + parseInt(children);
     const maxCapacity = rooms * 4;
 
@@ -119,6 +93,7 @@ const RoomAvailabilityCheck = () => {
       );
       return;
     }
+
     const availableRooms = roomData.filter((room) => room.available);
     if (availableRooms.length > 0) {
       setBookingDetails(
@@ -129,12 +104,6 @@ const RoomAvailabilityCheck = () => {
           totalAmount: rooms * room.price,
         }))
       );
-      console.log(bookingDetails);
-      for (let i = 0; i < bookingDetails.length; i++) {
-        console.log(i + " " + bookingDetails[i]);
-      }
-      
-
       setShowCards(true);
       setMessage("");
     } else {
@@ -181,7 +150,7 @@ const RoomAvailabilityCheck = () => {
 
 
   const handleSubmit = async (e) => {
-    // e.preventDefault();
+    e.preventDefault();
 
 
     if (!formData.username || !formData.email || !formData.phoneNumber || !formData.checkInDate || !formData.checkOutDate || !formData.adults || !formData.rooms || !formData.totalAmount) {
@@ -304,10 +273,10 @@ const handleChange = (e) => {
                 <CSSTransition key="start" classNames="page" timeout={300}>
                   <div>
                     {" "}
-                    {/* Added wrapper */}
+                 
                     <div className="page next">
                       {" "}
-                      {/* Added wrapper */}
+                    
                       <div className="inner">
                         <button className="go-back" onClick={goBack}>
                           Go Back
@@ -346,7 +315,7 @@ const handleChange = (e) => {
                                       <button
                                         className="button select-btn"
                                         onClick={() => {
-                                          setSelectedRoomId(room._id);
+                                          setSelectedRoomId(room.id);
                                           setPage("next");
                                         }}
                                       >
@@ -414,7 +383,6 @@ const handleChange = (e) => {
                                         className="button select-btn"
                                         onClick={() => {
                                           setSelectedRoomId(room.id);
-                                          console.log(selectedRoomId);
                                           setPage("next");
                                         }}
                                       >
@@ -595,7 +563,7 @@ const handleChange = (e) => {
                         Back
                       </button>
                       {bookingDetails
-                        .filter((room) => room.id === selectedRoomId)
+                        .filter((room) => room.id === selectedRoomId) // Filter by selected room ID
                         .map((room) => (
                           <div className="room_page" key={room.id}>
                             <div className="room-card">
@@ -606,8 +574,6 @@ const handleChange = (e) => {
                               />
                               <div className="amenities">
                                 <h2>{room.name}</h2>
-                                <p>Check in Date :{checkInDate}</p>
-                                <p>Check out Date:{checkOutDate}</p>
                                 <p>Selected Adults: {adults}</p>
                                 <p>Selected Children: {children}</p>
                                 <p>People to Book: {room.selectedPeople}</p>
@@ -647,176 +613,6 @@ const handleChange = (e) => {
                             </div>
                           </div>
                         ))}
-                    </div>
-                  </div>
-                </CSSTransition>
-              )}
-              {page === "last" && (
-                <CSSTransition key="last" classNames="page" timeout={300}>
-                  <div className="page next">
-                    <div className="inner">
-                      <div className="flex justify-center items-center h-screen bg-gray-100">
-                        <form
-                          // onSubmit={handleSubmit}
-                          className="bg-white p-8 shadow-lg rounded-lg w-96"
-                        >
-                          <h2 className="text-2xl font-bold text-gray-700 mb-4 text-center">
-                            Edit Order Details
-                          </h2>
-                          <div className="mb-4">
-                            <label
-                              htmlFor="username"
-                              className="block text-gray-600 font-medium mb-2"
-                            >
-                              Username
-                            </label>
-                            <input
-                              type="text"
-                              id="username"
-                              name="username"
-                              // onChange={handleChange}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                          </div>
-
-                          <div className="mb-4">
-                            <label
-                              htmlFor="email"
-                              className="block text-gray-600 font-medium mb-2"
-                            >
-                              Email
-                            </label>
-                            <input
-                              type="email"
-                              id="email"
-                              name="email"
-                              // onChange={handleChange}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                          </div>
-
-                          <div className="mb-4">
-                            <label
-                              htmlFor="Phone Number"
-                              className="block text-gray-600 font-medium mb-2"
-                            >
-                              Phone Number
-                            </label>
-                            <input
-                              type="text"
-                              id="phoneNumber"
-                              name="phoneNumber"
-                              // onChange={handleChange}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                          </div>
-                          {/* ----------------------------------------------------------------------------- */}
-
-                          {bookingDetails
-                            .filter((room) => room.id === selectedRoomId)
-                            .map((room) => (
-                              <div key={room.id}>
-                                <div className="mb-4">
-                                  <label
-                                    htmlFor="checkinDate"
-                                    className="block text-gray-600 font-medium mb-2"
-                                  >
-                                    CheckInDate
-                                  </label>
-                                  <input
-                                    type="date"
-                                    id="checkinDate"
-                                    name="checkinDate"
-                                    defaultValue={room.checkInDate}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  />
-                                </div>
-
-                                <div className="mb-4">
-                                  <label
-                                    htmlFor="checkoutDate"
-                                    className="block text-gray-600 font-medium mb-2"
-                                  >
-                                    CheckOutDate
-                                  </label>
-                                  <input
-                                    type="date"
-                                    id="checkOutDate"
-                                    name="checkOutDate"
-                                    defaultValue={room.checkOutDate}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  />
-                                </div>
-                                <div className="mb-4">
-                                  <label
-                                    htmlFor="NoOfAdults"
-                                    className="block text-gray-600 font-medium mb-2"
-                                  >
-                                    NoOfAdults
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="NoOfAdults"
-                                    name="NoOfAdults"
-                                    defaultValue={room.adults}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  />
-                                </div>
-                                <div className="mb-4">
-                                  <label
-                                    htmlFor="NoOfChildren"
-                                    className="block text-gray-600 font-medium mb-2"
-                                  >
-                                    NoOfChildren
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="NoOfChildren"
-                                    name="NoOfChildren"
-                                    defaultValue={room.children}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  />
-                                </div>
-                                <div className="mb-4">
-                                  <label
-                                    htmlFor="NoOfRooms"
-                                    className="block text-gray-600 font-medium mb-2"
-                                  >
-                                    NoOfRooms
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="NoOfRooms"
-                                    name="NoOfRooms"
-                                    defaultValue={room.rooms}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  />
-                                </div>
-                                <div className="mb-4">
-                                  <label
-                                    htmlFor="amount"
-                                    className="block text-gray-600 font-medium mb-2"
-                                  >
-                                    Amount
-                                  </label>
-                                  <input
-                                    type="number"
-                                    id="amount"
-                                    name="amount"
-                                    defaultValue={room.totalAmount}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  />
-                                </div>
-                              </div>
-                            ))}
-                          <button
-                            type="submit"
-                            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200"
-                          >
-                            Submit
-                          </button>
-                        </form>
-                      </div>
                     </div>
                   </div>
                 </CSSTransition>

@@ -29,7 +29,7 @@ router.get("/", async (req, res) => {
 });
 
 router.get('/room-type', async (req, res) => {
-  const {name} = req.query;
+  const { name } = req.query;
   if (!name) {
     return res.status(404).json({
       error: "Query parameter is required"
@@ -66,7 +66,6 @@ router.post("/", upload.single("image"), async (req, res) => {
 // Update room availability
 router.put("/:id", async (req, res) => {
   const { available } = req.body;
-
   try {
     const room = await Room.findById(req.params.id);
     if (room) {
@@ -126,6 +125,7 @@ router.post('/bookings', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while processing your request.' });
   }
 });
+
 router.get('/room-type', async (req, res) => {
   const { name } = req.query;
   if (!name) {
@@ -148,6 +148,39 @@ router.get('/room-type', async (req, res) => {
   }
 
 })
-
+router.post('/create-booking-order', async (req, res) => {
+  try {
+    const {
+      username,
+      email,
+      phoneNumber,
+      checkinDate,
+      checkoutDate,
+      noofadults,
+      noofchildren,
+      noofroom,
+      amount
+    } = req.body;
+    if (!username || !email || !phoneNumber || !checkinDate || !checkoutDate || !noofadults || !noofroom || !amount) {
+      return res.status(400).json({ error: 'All fields are required.' });
+    }
+    const newBooking = new Book({
+      username,
+      email,
+      phoneNumber,
+      checkinDate,
+      checkoutDate,
+      noofadults,
+      noofchildren,
+      noofroom,
+      amount
+    });
+    await newBooking.save();
+    res.status(201).json({ message: 'Booking created successfully!', booking: newBooking });
+  } catch (error) {
+    console.error('Error creating booking:', error);
+    res.status(500).json({ error: 'An error occurred while processing your request.' });
+  }
+});
 module.exports = router;
 
