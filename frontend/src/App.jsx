@@ -8,7 +8,6 @@ import Gallery from "./Gallery.jsx";
 import Rooms from "./Rooms.jsx";
 import BookingSystem from "./BookingSystem.jsx";
 import RoomCard from "./components/Roomcard.jsx";
-import AutofillForm from "./AutoFillForm.jsx";
 import { FormProvider } from "./FormContext.jsx";
 
 
@@ -42,7 +41,7 @@ const App = () => {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/rooms" element={<Rooms />} />
           <Route path="/booking" element={<BookingSystem />} />
-          <Route path="/form" element={<AutofillForm />} />
+   
      
         </Routes>
       </FormProvider>

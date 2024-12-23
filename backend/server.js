@@ -6,14 +6,13 @@ const Razorpay = require("razorpay");
 const bodyParser = require("body-parser");
 const { validateWebhookSignature } = require("razorpay/dist/utils/razorpay-utils.js");
 const Order = require("./models/Order.js");
-const BookinDetails = require("./models/BookingDetails.js");
 const Room = require("./models/Room.js")
 const nodemailer = require("nodemailer");
 const path = require("path");
 const connectDB = require("./config/db");
 const roomroute = require('./routes/roomRoutes.js')
 const migrate = require('./config/Migrate.js')
-
+const Book = require('./models/BookingDetails.js')
 // Load environment variables
 
 dotenv.config();
@@ -64,38 +63,73 @@ const sendEmail = async (to, subject, body) => {
         console.log("Email sent successfully to:", to);
     } catch (error) {
         console.error("Error sending email:", error);
-        throw error;  
+        throw error;
     }
 };
 
 app.post("/create-order", async (req, res) => {
-
     try {
-        const { amount, currency, receipt, notes, checkInDate, checkOutDate, NoOfAdults, NoOfChildren, NoOfRooms, email } = req.body;
+
+        const {
+            amount,
+            currency,
+            receipt,
+            username,
+            email,
+            phoneNumber,
+            roomName,
+            checkInDate,
+            checkOutDate,
+            NoOfAdults,
+            NoOfChildren,
+            NoOfRooms
+        } = req.body;
+
         const options = {
             amount: amount * 100,
             currency,
             receipt,
         };
+
+
         const order = await razorpay.orders.create(options);
 
-        // Save order to MongoDB
         const newOrder = new Order({
             order_id: order.id,
-            amount: order.amount,
+            amount: order.amount / 100,
             currency: order.currency,
             receipt: order.receipt,
-            notes: { checkInDate, checkOutDate, NoOfAdults, NoOfChildren, NoOfRooms, email },
             status: order.status,
+            username,
+            email,
+            phoneNumber,
+            roomName,
+            totalAmount: amount,
+            checkInDate,
+            checkOutDate,
+            adults: NoOfAdults,
+            children: NoOfChildren,
+            rooms: NoOfRooms
         });
+
+
         await newOrder.save();
 
-        res.json(order);
+        res.json({
+            success: true,
+            order,
+            message: "Order created and saved successfully!",
+        });
     } catch (error) {
-        console.log("Error creating order:", error);
-        res.status(500).send("Error creating order");
+        console.error("Error creating order:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error creating order",
+            error: error.message,
+        });
     }
 });
+
 
 // Verify payment and send emails
 app.post("/verify-payment", async (req, res) => {
@@ -179,6 +213,22 @@ app.post("/verify-payment", async (req, res) => {
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment ID:</td>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
             </tr>
+             <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-in Date:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.checkInDate}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-out Date:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.checkOutDate}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rooms:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.rooms}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Guests:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Adults: ${order.adults}, Children: ${order.children}</td>
+                        </tr>
         </table>
         <p style="font-size: 14px; color: #777;">Please log into the admin dashboard for more details. If you have any questions, contact the support team.</p>
         <p style="text-align: center; font-size: 14px; color: #777;">📍 Admin Dashboard - Ratana International</p>

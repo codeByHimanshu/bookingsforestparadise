@@ -30,18 +30,41 @@ const RoomAvailabilityCheck = () => {
   const [bookingDetails, setBookingDetails] = useState([]);
   const [page, setPage] = useState("start");
   const [selectedRoomData, setSelectedRoomData] = useState([]);
+  const [formData, setFormData] = useState({
+    username: '',
+    phoneNumber: '',
+    email: '',
+    checkInDate: checkInDate,
+    checkOutDate: checkOutDate,
+    adults: adults,
+    children: children,
+    rooms: rooms,
+    totalAmount: selectedRoomData.totalAmount || '',
+  });
+
+  useEffect(() => {
+    setFormData((prevState) => ({
+      ...prevState,
+      checkInDate: checkInDate,
+      checkOutDate: checkOutDate,
+      adults: adults,
+      children: children,
+      rooms: rooms,
+      totalAmount: selectedRoomData.totalAmount || '',
+    }));
+  }, [checkInDate, checkOutDate, adults, children, rooms, selectedRoomData]);
 
   const navigate = useNavigate()
 
-  // const handlePayNow = async (totalAmount, roomId, selectedRooms) => {
-  //   if (!totalAmount) {
-  //     alert("Please choose a room.");
-  //     return;
-  //   }
-  //   localStorage.setItem("roomId", roomId); // Save room ID
-  //   localStorage.setItem("selectedRooms", selectedRooms); // Save selected rooms
-  //   await initializePayment(totalAmount, roomId, selectedRooms); // Pass data to payment function
-  // };
+  const handlePayNow = async (totalAmount, roomId, selectedRooms) => {
+    if (!totalAmount) {
+      alert("Please choose a room.");
+      return;
+    }
+    localStorage.setItem("roomId", roomId); // Save room ID
+    localStorage.setItem("selectedRooms", selectedRooms); // Save selected room
+    await initializePayment(totalAmount, roomId, selectedRooms); // Pass data to payment function
+  };
   const bookingformclick = () => {
     setShowForm(!showForm);
     setShowCards(!showCards)
@@ -107,22 +130,18 @@ const RoomAvailabilityCheck = () => {
 
   const bookNow = async (name) => {
     try {
-      // Ensure roomName is passed as part of the URL correctly
+      
       const response = await fetch(`http://localhost:5000/api/rooms/room-type?name=${encodeURIComponent(name)}`);
-      const data = await response.json();
-      console.log(data);
-      
-      console.log("Rooms:", rooms, "Price:", data.rooms[0].price,"name:",data.rooms[0].name);
-      
+      const data = await response.json();    
       if (data.error) {
-        console.error(data.error); // Log the error message if available
+        console.error(data.error); 
       } else {
-        const roomCount = parseInt(rooms) || 0; // Fallback to 0 if rooms is undefined
+        const roomCount = parseInt(rooms) || 0; 
         const roomPrice = parseFloat(data.rooms[0].price) || 0;
         setSelectedRoomData({
           ...data,
-          totalAmount: roomCount * roomPrice,// Calculate totalAmount here based on the number of rooms
-        }); // Store the fetched room data
+          totalAmount: roomCount * roomPrice,
+        });
       }
     } catch (error) {
       console.error("Error fetching room data:", error);
@@ -130,7 +149,49 @@ const RoomAvailabilityCheck = () => {
   };
 
 
+  const handleSubmit = async (e) => {
+    // e.preventDefault();
 
+
+    if (!formData.username || !formData.email || !formData.phoneNumber || !formData.checkInDate || !formData.checkOutDate || !formData.adults || !formData.rooms || !formData.totalAmount) {
+      alert('All fields are required.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/rooms/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert('Booking successful!');
+        console.log('Booking response:', result);
+      } else {
+        console.error('Error response:', result);
+        alert(`Error: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error making booking request:', error.message, error.stack);
+    }
+  };
+
+
+   
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+  }));
+};
+
+
+  
   return (
     <>
       <Header />
@@ -212,10 +273,10 @@ const RoomAvailabilityCheck = () => {
                 <CSSTransition key="start" classNames="page" timeout={300}>
                   <div>
                     {" "}
-                    {/* Added wrapper */}
+                 
                     <div className="page next">
                       {" "}
-                      {/* Added wrapper */}
+                    
                       <div className="inner">
                         <button className="go-back" onClick={goBack}>
                           Go Back
@@ -566,7 +627,7 @@ const RoomAvailabilityCheck = () => {
           <div className="inner">
             <div className="flex justify-center items-center h-screen bg-gray-100">
               <form
-                // onSubmit={handleSubmit}
+                onSubmit={handleSubmit}
                 className="bg-white p-8 shadow-lg rounded-lg w-96"
               >
                 <h2 className="text-2xl font-bold text-gray-700 mb-4 text-center">
@@ -583,7 +644,8 @@ const RoomAvailabilityCheck = () => {
                     type="text"
                     id="username"
                     name="username"
-                    // onChange={handleChange}
+                    value={formData.username}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
@@ -599,7 +661,8 @@ const RoomAvailabilityCheck = () => {
                     type="email"
                     id="email"
                     name="email"
-                    // onChange={handleChange}
+                    value={formData.email}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
@@ -615,7 +678,8 @@ const RoomAvailabilityCheck = () => {
                     type="text"
                     id="phoneNumber"
                     name="phoneNumber"
-                    // onChange={handleChange}
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
@@ -633,7 +697,8 @@ const RoomAvailabilityCheck = () => {
                     type="date"
                     id="checkinDate"
                     name="checkinDate"
-                    defaultValue={checkInDate}
+                    value={formData.checkInDate}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
@@ -650,7 +715,8 @@ const RoomAvailabilityCheck = () => {
                     type="date"
                     id="checkOutDate"
                     name="checkOutDate"
-                    defaultValue={checkOutDate}
+                    value={formData.checkOutDate}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
@@ -664,8 +730,9 @@ const RoomAvailabilityCheck = () => {
                   <input
                     type="text"
                     id="NoOfAdults"
-                    name="NoOfAdults"
-                    defaultValue={adults}
+                    name="adults"
+                    value={formData.adults}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
@@ -679,8 +746,9 @@ const RoomAvailabilityCheck = () => {
                   <input
                     type="text"
                     id="NoOfChildren"
-                    name="NoOfChildren"
-                    defaultValue={children}
+                    name="children"
+                    value={formData.children}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
@@ -694,8 +762,9 @@ const RoomAvailabilityCheck = () => {
                   <input
                     type="text"
                     id="NoOfRooms"
-                    name="NoOfRooms"
-                    defaultValue={rooms}
+                    name="rooms"
+                    value={formData.rooms}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
@@ -709,8 +778,9 @@ const RoomAvailabilityCheck = () => {
                   <input
                     type="number"
                     id="amount"
-                    name="amount"
-                    defaultValue={selectedRoomData.totalAmount}
+                    name="totalAmount"
+                    value={formData.totalAmount}
+                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>

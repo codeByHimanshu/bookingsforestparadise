@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const Room = require("../models/Room");
 const migrate = require("../config/Migrate");
-const BookingSchema = require("../models/BookingDetails");
+const Book = require("../models/BookingDetails");
 
 const router = express.Router();
 
@@ -51,7 +51,6 @@ router.get('/room-type', async (req, res) => {
 
 })
 
-// Add a new room with image upload
 router.post("/", upload.single("image"), async (req, res) => {
   const { name, price, available, availableRooms, amenities } = req.body;
   const image = req.file ? req.file.path : null;
@@ -82,61 +81,46 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.post('/update-availability', async (req, res) => {
-  try {
-    const { roomsToUpdate } = req.body;
 
-    // Ensure roomsToUpdate is an array
-    if (!Array.isArray(roomsToUpdate)) {
-      return res.status(400).send('Invalid format: roomsToUpdate should be an array');
+
+router.post('/bookings', async (req, res) => {
+  try {
+    const {
+      username,
+      email,
+      phoneNumber,
+      checkInDate,
+      checkOutDate,
+      adults,
+      children,
+      rooms,
+      totalAmount
+    } = req.body;
+
+ 
+    if (!username || !email || !phoneNumber || !checkInDate || !checkOutDate || !adults || !rooms || !totalAmount) {
+      return res.status(400).json({ error: 'All fields are required.' });
     }
 
-    // Iterate over each room to update its available rooms
-    for (let { roomId, selectedRooms } of roomsToUpdate) {
-      // Find the specific room by _id in the database
-      const room = await Room.findById(roomId);
-
-      if (room) {
-        // Ensure availableRooms is parsed as integer (convert from string if necessary)
-        let availableRooms = parseInt(room.availableRooms, 10); // Parse availableRooms as integer
-
-        // Check if there are enough available rooms
-        if (availableRooms >= selectedRooms) {
-          // Subtract selectedRooms from availableRooms
-          availableRooms -= selectedRooms;
-
-          // Update the room's availableRooms in the database
-          room.availableRooms = availableRooms.toString(); // Store availableRooms as string
-
-          // Save the updated room document
-          await room.save(); // Ensure we are saving only the selected room
-        } else {
-          return res.status(400).send('Not enough rooms available');
-        }
-      } else {
-        return res.status(404).send(`Room with ID ${roomId} not found`);
-      }
-    }
-
-    // Send a success response after updating the rooms
-    res.status(200).send('Room availability updated successfully');
-  } catch (error) {
-    console.error('Error updating room availability:', error); // Log detailed error
-    res.status(500).send('Server error');
-  }
-});
-router.post('/save-booking-details', async (req, res) => {
-  const { checkInDate, checkOutDate, NoOfAdults, NoOfChildren, NoOfRooms } = req.body;
-  try {
-    const newdata = new BookingSchema({ checkInDate, checkOutDate, NoOfAdults, NoOfChildren, NoOfRooms });
-    await newdata.save();
-    res.status(201).json({
-      msg: "Booking details have been created successfully"
+  
+    const newBooking = new Book({
+      username,
+      email,
+      phoneNumber,
+      checkInDate,
+      checkOutDate,
+      adults,
+      children,
+      rooms,
+      totalAmount
     });
+
+  
+    await newBooking.save()
+    
   } catch (error) {
-    res.status(500).json({
-      msg: "There is an error"
-    });
+    console.error('Error creating booking:', error.message, error.stack);
+    res.status(500).json({ error: 'An error occurred while processing your request.' });
   }
 });
 
