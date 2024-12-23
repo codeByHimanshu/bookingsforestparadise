@@ -117,6 +117,9 @@ router.post('/bookings', async (req, res) => {
 
   
     await newBooking.save()
+    if(newBooking){
+      return res.status(201).json({ message: 'Booking created successfully.' });
+    }
     
   } catch (error) {
     console.error('Error creating booking:', error.message, error.stack);

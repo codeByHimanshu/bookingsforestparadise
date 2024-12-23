@@ -8,10 +8,9 @@ import Gallery from "./Gallery.jsx";
 import Rooms from "./Rooms.jsx";
 import BookingSystem from "./BookingSystem.jsx";
 import RoomCard from "./components/Roomcard.jsx";
-import { FormProvider } from "./FormContext.jsx";
 
 
-// Dummy data for the hotel
+
 const hotelData = {
   name: "Forest Paradise Resort",
   home: "Experience the Best of Nature and Luxury",
@@ -31,7 +30,7 @@ const hotelData = {
 const App = () => {
   return (
     <BrowserRouter>
-      <FormContextProvider>
+      
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/card" element={<RoomCard />} />
@@ -43,9 +42,9 @@ const App = () => {
           <Route path="/booking" element={<BookingSystem />} />
    
      
->>>>>>> 9350bd4fc26f87eef702ce414e42b24725b09159
+
         </Routes>
-      </FormContextProvider>
+ 
     </BrowserRouter>
   );
 };
