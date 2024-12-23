@@ -1,4 +1,3 @@
-
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
@@ -6,13 +5,13 @@ const Razorpay = require("razorpay");
 const bodyParser = require("body-parser");
 const { validateWebhookSignature } = require("razorpay/dist/utils/razorpay-utils.js");
 const Order = require("./models/Order.js");
-const BookinDetails = require("./models/BookingDetails.js");
 const Room = require("./models/Room.js")
 const nodemailer = require("nodemailer");
 const path = require("path");
 const connectDB = require("./config/db");
 const roomroute = require('./routes/roomRoutes.js')
 const migrate = require('./config/Migrate.js')
+const Book = require('./models/BookingDetails.js')
 
 // Load environment variables
 
@@ -64,38 +63,58 @@ const sendEmail = async (to, subject, body) => {
         console.log("Email sent successfully to:", to);
     } catch (error) {
         console.error("Error sending email:", error);
-        throw error;  
+        throw error;
     }
 };
+app.post('/create-booking-order', async (req, res) => {
+    const username=req.body.username;
+    const email=req.body.email;
+    const phoneNumber=req.body.phoneNumber;
+    const checkinDate=req.body.checkinDate;
+    const checkoutDate=req.body.checkoutDate;
+    const noofadults=req.body.noofadults;
+    const noofchildren=req.body.noofchildren;
+    const noofroom=req.body.noofroom;
+    const amount=req.body.amount;
 
-app.post("/create-order", async (req, res) => {
-
+    if (!username || !email || !phoneNumber) {
+        return res.status(400).json({ error: "Please fill all the required fields" });
+    }
+    const newBooking=new Book({username,email,phoneNumber,checkinDate,checkoutDate,noofadults,noofchildren,noofroom,amount});
     try {
-        const { amount, currency, receipt, notes, checkInDate, checkOutDate, NoOfAdults, NoOfChildren, NoOfRooms, email } = req.body;
+        newBooking.save();
+        return res.status(201).json({ message: "Booking created successfully", booking: newBooking });
+    } catch (error) {
+        console.error("Error creating booking:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+app.post("/create-order", async (req, res) => {
+    try {
+        const { amount, currency, receipt, notes } = req.body;
         const options = {
             amount: amount * 100,
             currency,
             receipt,
         };
         const order = await razorpay.orders.create(options);
-
         // Save order to MongoDB
         const newOrder = new Order({
             order_id: order.id,
             amount: order.amount,
             currency: order.currency,
             receipt: order.receipt,
-            notes: { checkInDate, checkOutDate, NoOfAdults, NoOfChildren, NoOfRooms, email },
+            notes: order.notes,
             status: order.status,
         });
         await newOrder.save();
-
         res.json(order);
     } catch (error) {
         console.log("Error creating order:", error);
         res.status(500).send("Error creating order");
     }
 });
+
 
 // Verify payment and send emails
 app.post("/verify-payment", async (req, res) => {

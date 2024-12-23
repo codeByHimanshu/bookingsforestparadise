@@ -44,11 +44,7 @@ const App = () => {
           <Route path="/rooms" element={<Rooms />} />
           <Route path="/booking" element={<BookingSystem />} />
           <Route path="/form" element={<AutofillForm />} />
-<<<<<<< HEAD
           <Route path="search" element={<RoomSearch/>}/>
-=======
-     
->>>>>>> 9350bd4fc26f87eef702ce414e42b24725b09159
         </Routes>
       </FormContextProvider>
     </BrowserRouter>

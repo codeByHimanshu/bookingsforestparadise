@@ -14,9 +14,6 @@ import { IoTvSharp } from "react-icons/io5";
 import { GiSlippers } from "react-icons/gi";
 import { TbAirConditioning } from "react-icons/tb";
 import { MdDesk } from "react-icons/md";
-import AutofillForm from "./AutoFillForm";
-import { useNavigate } from "react-router-dom";
-
 const RoomAvailabilityCheck = () => {
   const today = new Date().toISOString().split("T")[0];
   const [checkInDate, setCheckInDate] = useState("");
@@ -33,24 +30,34 @@ const RoomAvailabilityCheck = () => {
   const [bookingDetails, setBookingDetails] = useState([]);
   const [page, setPage] = useState("start");
   const [selectedRoomData, setSelectedRoomData] = useState([]);
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    phoneNumber: "",
+    checkinDate: checkInDate,
+    checkoutDate: checkOutDate,
+    adults: adults,
+    children: children,
+    room: rooms,
+    amount: "",
+  });
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  // const handlePayNow = async (totalAmount, roomId, selectedRooms) => {
-  //   if (!totalAmount) {
-  //     alert("Please choose a room.");
-  //     return;
-  //   }
-  //   localStorage.setItem("roomId", roomId); // Save room ID
-  //   localStorage.setItem("selectedRooms", selectedRooms); // Save selected rooms
-  //   await initializePayment(totalAmount, roomId, selectedRooms); // Pass data to payment function
-  // };
+  const handlePayNow = async (totalAmount, roomId, selectedRooms) => {
+    if (!totalAmount) {
+      alert("Please choose a room.");
+      return;
+    }
+    localStorage.setItem("roomId", roomId); // Save room ID
+    localStorage.setItem("selectedRooms", selectedRooms); // Save selected room
+    await initializePayment(totalAmount, roomId, selectedRooms); // Pass data to payment function
+  };
   const bookingformclick = () => {
     setShowForm(!showForm);
-    setShowCards(!showCards)
-  }
+    setShowCards(!showCards);
+  };
   useEffect(() => {
-    console.log("use effect is called");
     const fetchRooms = async () => {
       try {
         const response = await fetch("http://localhost:5000/api/rooms");
@@ -63,31 +70,8 @@ const RoomAvailabilityCheck = () => {
     fetchRooms();
   }, []);
 
-  useEffect(() => {
-    console.log("2nd useeffect is called")
-    if (!name) return;
-
-    const fetchRooms = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/api/rooms/room-type",
-          { params:{ name:"Business"} }
-        );
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
-        }
-        const data = await response.json();
-      } catch (err) {
-        console.log("there is an error on fetching the data");
-      }
-    };
-    fetchRooms();
-  }, []);
-
-  console.log("useeffect finsihed exec");
-  console.log(roomData);
+  // Check availability logic
   const checkAvailability = () => {
-    console.log("check avalablilty is called");
     const totalPeople = parseInt(adults) + parseInt(children);
     const maxCapacity = rooms * 4;
 
@@ -97,6 +81,7 @@ const RoomAvailabilityCheck = () => {
       );
       return;
     }
+
     const availableRooms = roomData.filter((room) => room.available);
     if (availableRooms.length > 0) {
       setBookingDetails(
@@ -107,12 +92,6 @@ const RoomAvailabilityCheck = () => {
           totalAmount: rooms * room.price,
         }))
       );
-      console.log(bookingDetails);
-      for (let i = 0; i < bookingDetails.length; i++) {
-        console.log(i + " " + bookingDetails[i]);
-      }
-      setPay[bookingDetails[2]];
-
       setShowCards(true);
       setMessage("");
     } else {
@@ -139,29 +118,60 @@ const RoomAvailabilityCheck = () => {
 
   const bookNow = async (name) => {
     try {
-      // Ensure roomName is passed as part of the URL correctly
-      const response = await fetch(`http://localhost:5000/api/rooms/room-type?name=${encodeURIComponent(name)}`);
+      const response = await fetch(
+        `http://localhost:5000/api/rooms/room-type?name=${encodeURIComponent(
+          name
+        )}`
+      );
       const data = await response.json();
-      console.log(data);
-      
-      console.log("Rooms:", rooms, "Price:", data.rooms[0].price,"name:",data.rooms[0].name);
-      
       if (data.error) {
-        console.error(data.error); // Log the error message if available
+        console.error(data.error);
       } else {
-        const roomCount = parseInt(rooms) || 0; // Fallback to 0 if rooms is undefined
+        const roomCount = parseInt(rooms) || 0;
         const roomPrice = parseFloat(data.rooms[0].price) || 0;
         setSelectedRoomData({
           ...data,
-          totalAmount: roomCount * roomPrice,// Calculate totalAmount here based on the number of rooms
-        }); // Store the fetched room data
+          totalAmount: roomCount * roomPrice,
+        });
       }
     } catch (error) {
       console.error("Error fetching room data:", error);
     }
   };
+  const handleSubmit = async () => {
+    e.preventDefault();
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/rooms/create-booking-order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
+      const result = await response.json();
+      console.log(result)
+      if (response.ok) {
+        alert("Booking successful!");
+        console.log("Booking response:", result);
+      } else {
+        alert(`Error: ${result.error}`);
+      }
+    } catch (error) {
+      console.error("Error making booking request:", error);
+    }
+  };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   return (
     <>
@@ -243,7 +253,9 @@ const RoomAvailabilityCheck = () => {
               {page === "start" && (
                 <CSSTransition key="start" classNames="page" timeout={300}>
                   <div>
+                    {" "}
                     <div className="page next">
+                      {" "}
                       <div className="inner">
                         <button className="go-back" onClick={goBack}>
                           Go Back
@@ -282,7 +294,7 @@ const RoomAvailabilityCheck = () => {
                                       <button
                                         className="button select-btn"
                                         onClick={() => {
-                                          setSelectedRoomId(room._id);
+                                          setSelectedRoomId(room.id);
                                           setPage("next");
                                         }}
                                       >
@@ -350,7 +362,6 @@ const RoomAvailabilityCheck = () => {
                                         className="button select-btn"
                                         onClick={() => {
                                           setSelectedRoomId(room.id);
-                                          console.log(selectedRoomId);
                                           setPage("next");
                                         }}
                                       >
@@ -531,7 +542,7 @@ const RoomAvailabilityCheck = () => {
                         Back
                       </button>
                       {bookingDetails
-                        .filter((room) => room.id === selectedRoomId)
+                        .filter((room) => room.id === selectedRoomId) // Filter by selected room ID
                         .map((room) => (
                           <div className="room_page" key={room.id}>
                             <div className="room-card">
@@ -542,29 +553,29 @@ const RoomAvailabilityCheck = () => {
                               />
                               <div className="amenities">
                                 <h2>{room.name}</h2>
-                                <p>Check in Date :{checkInDate}</p>
-                                <p>Check out Date:{checkOutDate}</p>
                                 <p>Selected Adults: {adults}</p>
                                 <p>Selected Children: {children}</p>
                                 <p>People to Book: {room.selectedPeople}</p>
                                 <p>Selected Rooms: {room.selectedRooms}</p>
                                 <p>Total Amount: ₹{room.totalAmount}</p>
                                 <br />
-                               
-                                    <button
-                                      className={`btn1 ${room.availableRooms === 0 ? "disabled" : ""}`}
-                                      onClick={() => {
-                                        console.log(name)
-                                        // console.log(selectedRoomData.name)
-                                        // console.log(selectedRoom.name)
-                                        bookNow(room.name); // Pass the room's name dynamically
-                                        bookingformclick(); // Call your form display function
-                                      }}
-                                      disabled={room.availableRooms === 0}
-                                    >
-                                      Book Now
-                                    </button>
-                               
+
+                                <button
+                                  className={`btn1 ${
+                                    room.availableRooms === 0 ? "disabled" : ""
+                                  }`}
+                                  onClick={() => {
+                                    console.log(name);
+                                    // console.log(selectedRoomData.name)
+                                    // console.log(selectedRoom.name)
+                                    bookNow(room.name); // Pass the room's name dynamically
+                                    bookingformclick(); // Call your form display function
+                                  }}
+                                  disabled={room.availableRooms === 0}
+                                >
+                                  Book Now
+                                </button>
+
                                 <div className="button-container">
                                   <div style={{ marginTop: "20px" }}>
                                     <h2
@@ -587,187 +598,16 @@ const RoomAvailabilityCheck = () => {
                   </div>
                 </CSSTransition>
               )}
-              {page === "last" && (
-                <CSSTransition key="last" classNames="page" timeout={300}>
-                  <div className="page next">
-                    <div className="inner">
-                      <div className="flex justify-center items-center h-screen bg-gray-100">
-                        <form
-                          // onSubmit={handleSubmit}
-                          className="bg-white p-8 shadow-lg rounded-lg w-96"
-                        >
-                          <h2 className="text-2xl font-bold text-gray-700 mb-4 text-center">
-                            Edit Order Details
-                          </h2>
-                          <div className="mb-4">
-                            <label
-                              htmlFor="username"
-                              className="block text-gray-600 font-medium mb-2"
-                            >
-                              Username
-                            </label>
-                            <input
-                              type="text"
-                              id="username"
-                              name="username"
-                              // onChange={handleChange}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                          </div>
-
-                          <div className="mb-4">
-                            <label
-                              htmlFor="email"
-                              className="block text-gray-600 font-medium mb-2"
-                            >
-                              Email
-                            </label>
-                            <input
-                              type="email"
-                              id="email"
-                              name="email"
-                              // onChange={handleChange}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                          </div>
-
-                          <div className="mb-4">
-                            <label
-                              htmlFor="Phone Number"
-                              className="block text-gray-600 font-medium mb-2"
-                            >
-                              Phone Number
-                            </label>
-                            <input
-                              type="text"
-                              id="phoneNumber"
-                              name="phoneNumber"
-                              // onChange={handleChange}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                          </div>
-                          {/* ----------------------------------------------------------------------------- */}
-
-                          {bookingDetails
-                            .filter((room) => room.id === selectedRoomId)
-                            .map((room) => (
-                              <div key={room.id}>
-                                <div className="mb-4">
-                                  <label
-                                    htmlFor="checkinDate"
-                                    className="block text-gray-600 font-medium mb-2"
-                                  >
-                                    CheckInDate
-                                  </label>
-                                  <input
-                                    type="date"
-                                    id="checkinDate"
-                                    name="checkinDate"
-                                    defaultValue={room.checkInDate}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  />
-                                </div>
-
-                                <div className="mb-4">
-                                  <label
-                                    htmlFor="checkoutDate"
-                                    className="block text-gray-600 font-medium mb-2"
-                                  >
-                                    CheckOutDate
-                                  </label>
-                                  <input
-                                    type="date"
-                                    id="checkOutDate"
-                                    name="checkOutDate"
-                                    defaultValue={room.checkOutDate}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  />
-                                </div>
-                                <div className="mb-4">
-                                  <label
-                                    htmlFor="NoOfAdults"
-                                    className="block text-gray-600 font-medium mb-2"
-                                  >
-                                    NoOfAdults
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="NoOfAdults"
-                                    name="NoOfAdults"
-                                    defaultValue={room.adults}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  />
-                                </div>
-                                <div className="mb-4">
-                                  <label
-                                    htmlFor="NoOfChildren"
-                                    className="block text-gray-600 font-medium mb-2"
-                                  >
-                                    NoOfChildren
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="NoOfChildren"
-                                    name="NoOfChildren"
-                                    defaultValue={room.children}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  />
-                                </div>
-                                <div className="mb-4">
-                                  <label
-                                    htmlFor="NoOfRooms"
-                                    className="block text-gray-600 font-medium mb-2"
-                                  >
-                                    NoOfRooms
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="NoOfRooms"
-                                    name="NoOfRooms"
-                                    defaultValue={room.rooms}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  />
-                                </div>
-                                <div className="mb-4">
-                                  <label
-                                    htmlFor="amount"
-                                    className="block text-gray-600 font-medium mb-2"
-                                  >
-                                    Amount
-                                  </label>
-                                  <input
-                                    type="number"
-                                    id="amount"
-                                    name="amount"
-                                    defaultValue={room.totalAmount}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  />
-                                </div>
-                              </div>
-                            ))}
-                          <button
-                            type="submit"
-                            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200"
-                          >
-                            Submit
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </CSSTransition>
-              )}
             </TransitionGroup>
           </>
         )}
       </div>
-      {showForm &&
-        selectedRoomData &&
+      {showForm  && (
         <div className="page next">
           <div className="inner">
             <div className="flex justify-center items-center h-screen bg-gray-100">
               <form
-                // onSubmit={handleSubmit}
+                onSubmit={handleSubmit}
                 className="bg-white p-8 shadow-lg rounded-lg w-96"
               >
                 <h2 className="text-2xl font-bold text-gray-700 mb-4 text-center">
@@ -784,8 +624,10 @@ const RoomAvailabilityCheck = () => {
                     type="text"
                     id="username"
                     name="username"
-                    // onChange={handleChange}
+                    value={formData.username}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
                   />
                 </div>
 
@@ -800,14 +642,16 @@ const RoomAvailabilityCheck = () => {
                     type="email"
                     id="email"
                     name="email"
-                    // onChange={handleChange}
+                    value={formData.email}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
                   />
                 </div>
 
                 <div className="mb-4">
                   <label
-                    htmlFor="Phone Number"
+                    htmlFor="phoneNumber"
                     className="block text-gray-600 font-medium mb-2"
                   >
                     Phone Number
@@ -816,13 +660,12 @@ const RoomAvailabilityCheck = () => {
                     type="text"
                     id="phoneNumber"
                     name="phoneNumber"
-                    // onChange={handleChange}
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
                   />
                 </div>
-                {/* ----------------------------------------------------------------------------- */}
-
-
                 <div className="mb-4">
                   <label
                     htmlFor="checkinDate"
@@ -836,13 +679,13 @@ const RoomAvailabilityCheck = () => {
                     name="checkinDate"
                     defaultValue={checkInDate}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                   
                   />
                 </div>
 
-
                 <div className="mb-4">
                   <label
-                    htmlFor="checkoutDate"
+                    htmlFor="checkOutDate"
                     className="block text-gray-600 font-medium mb-2"
                   >
                     CheckOutDate
@@ -853,6 +696,7 @@ const RoomAvailabilityCheck = () => {
                     name="checkOutDate"
                     defaultValue={checkOutDate}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    
                   />
                 </div>
                 <div className="mb-4">
@@ -868,6 +712,7 @@ const RoomAvailabilityCheck = () => {
                     name="NoOfAdults"
                     defaultValue={adults}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    
                   />
                 </div>
                 <div className="mb-4">
@@ -882,7 +727,9 @@ const RoomAvailabilityCheck = () => {
                     id="NoOfChildren"
                     name="NoOfChildren"
                     defaultValue={children}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                   
                   />
                 </div>
                 <div className="mb-4">
@@ -897,7 +744,9 @@ const RoomAvailabilityCheck = () => {
                     id="NoOfRooms"
                     name="NoOfRooms"
                     defaultValue={rooms}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    
                   />
                 </div>
                 <div className="mb-4">
@@ -912,7 +761,9 @@ const RoomAvailabilityCheck = () => {
                     id="amount"
                     name="amount"
                     defaultValue={selectedRoomData.totalAmount}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    
                   />
                 </div>
 
@@ -923,13 +774,10 @@ const RoomAvailabilityCheck = () => {
                   Submit
                 </button>
               </form>
-        
             </div>
           </div>
         </div>
-
-      }
-
+      )}
     </>
   );
 };
