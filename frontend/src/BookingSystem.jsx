@@ -30,16 +30,18 @@ const RoomAvailabilityCheck = () => {
   const [bookingDetails, setBookingDetails] = useState([]);
   const [page, setPage] = useState("start");
   const [selectedRoomData, setSelectedRoomData] = useState([]);
+  const [paymentpage, setPaymentPage] = useState("start");
+  const [showPaymentPage, setshowPaymentPage] = useState(false);
   const [formData, setFormData] = useState({
-    username: '',
-    phoneNumber: '',
-    email: '',
+    username: "",
+    phoneNumber: "",
+    email: "",
     checkInDate: checkInDate,
     checkOutDate: checkOutDate,
     adults: adults,
     children: children,
     rooms: rooms,
-    totalAmount: selectedRoomData.totalAmount || '',
+    totalAmount: selectedRoomData.totalAmount || "",
   });
 
   useEffect(() => {
@@ -50,11 +52,11 @@ const RoomAvailabilityCheck = () => {
       adults: adults,
       children: children,
       rooms: rooms,
-      totalAmount: selectedRoomData.totalAmount || '',
+      totalAmount: selectedRoomData.totalAmount || "",
     }));
   }, [checkInDate, checkOutDate, adults, children, rooms, selectedRoomData]);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handlePayNow = async (totalAmount, roomId, selectedRooms) => {
     if (!totalAmount) {
@@ -67,8 +69,13 @@ const RoomAvailabilityCheck = () => {
   };
   const bookingformclick = () => {
     setShowForm(!showForm);
-    setShowCards(!showCards)
-  }
+    setShowCards(!showCards);
+    setshowPaymentPage(false);
+  };
+  const Paymentformclick = () => {
+    setshowPaymentPage(!showPaymentPage);
+    setShowForm(!showForm);
+  };
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -130,13 +137,16 @@ const RoomAvailabilityCheck = () => {
 
   const bookNow = async (name) => {
     try {
-      
-      const response = await fetch(`http://localhost:5000/api/rooms/room-type?name=${encodeURIComponent(name)}`);
-      const data = await response.json();    
+      const response = await fetch(
+        `http://localhost:5000/api/rooms/room-type?name=${encodeURIComponent(
+          name
+        )}`
+      );
+      const data = await response.json();
       if (data.error) {
-        console.error(data.error); 
+        console.error(data.error);
       } else {
-        const roomCount = parseInt(rooms) || 0; 
+        const roomCount = parseInt(rooms) || 0;
         const roomPrice = parseFloat(data.rooms[0].price) || 0;
         setSelectedRoomData({
           ...data,
@@ -148,50 +158,55 @@ const RoomAvailabilityCheck = () => {
     }
   };
 
-
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-
-    if (!formData.username || !formData.email || !formData.phoneNumber || !formData.checkInDate || !formData.checkOutDate || !formData.adults || !formData.rooms || !formData.totalAmount) {
-      alert('All fields are required.');
+    // e.preventDefault();
+    if (
+      !formData.username ||
+      !formData.email ||
+      !formData.phoneNumber ||
+      !formData.checkInDate ||
+      !formData.checkOutDate ||
+      !formData.adults ||
+      !formData.rooms ||
+      !formData.totalAmount
+    ) {
+      alert("All fields are required.");
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/rooms/bookings', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5000/api/rooms/bookings", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
       const result = await response.json();
       if (response.ok) {
-        alert('Booking successful!');
-        console.log('Booking response:', result);
+        console.log("Booking response:", result);
       } else {
-        console.error('Error response:', result);
+        console.error("Error response:", result);
         alert(`Error: ${result.error}`);
       }
     } catch (error) {
-      console.error('Error making booking request:', error.message, error.stack);
+      console.error(
+        "Error making booking request:",
+        error.message,
+        error.stack
+      );
     }
   };
 
-
-   
-const handleChange = (e) => {
-  const { name, value } = e.target;
-  setFormData((prevState) => ({
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
       ...prevState,
       [name]: value,
-  }));
-};
+    }));
+  };
 
-
-  
   return (
     <>
       <Header />
@@ -273,10 +288,8 @@ const handleChange = (e) => {
                 <CSSTransition key="start" classNames="page" timeout={300}>
                   <div>
                     {" "}
-                 
                     <div className="page next">
                       {" "}
-                    
                       <div className="inner">
                         <button className="go-back" onClick={goBack}>
                           Go Back
@@ -580,21 +593,23 @@ const handleChange = (e) => {
                                 <p>Selected Rooms: {room.selectedRooms}</p>
                                 <p>Total Amount: ₹{room.totalAmount}</p>
                                 <br />
-                               
-                                    <button
-                                      className={`btn1 ${room.availableRooms === 0 ? "disabled" : ""}`}
-                                      onClick={() => {
-                                        console.log(name)
-                                        // console.log(selectedRoomData.name)
-                                        // console.log(selectedRoom.name)
-                                        bookNow(room.name); // Pass the room's name dynamically
-                                        bookingformclick(); // Call your form display function
-                                      }}
-                                      disabled={room.availableRooms === 0}
-                                    >
-                                      Book Now
-                                    </button>
-                               
+
+                                <button
+                                  className={`btn1 ${
+                                    room.availableRooms === 0 ? "disabled" : ""
+                                  }`}
+                                  onClick={() => {
+                                    console.log(name);
+                                    // console.log(selectedRoomData.name)
+                                    // console.log(selectedRoom.name)
+                                    bookNow(room.name); // Pass the room's name dynamically
+                                    bookingformclick(); // Call your form display function
+                                  }}
+                                  disabled={room.availableRooms === 0}
+                                >
+                                  Book Now
+                                </button>
+
                                 <div className="button-container">
                                   <div style={{ marginTop: "20px" }}>
                                     <h2
@@ -621,13 +636,12 @@ const handleChange = (e) => {
           </>
         )}
       </div>
-      {showForm &&
-        selectedRoomData &&
+      {showForm && selectedRoomData && (
         <div className="page next">
           <div className="inner">
             <div className="flex justify-center items-center h-screen bg-gray-100">
               <form
-                onSubmit={handleSubmit}
+                // onSubmit={handleSubmit}
                 className="bg-white p-8 shadow-lg rounded-lg w-96"
               >
                 <h2 className="text-2xl font-bold text-gray-700 mb-4 text-center">
@@ -683,9 +697,6 @@ const handleChange = (e) => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
-                {/* ----------------------------------------------------------------------------- */}
-
-
                 <div className="mb-4">
                   <label
                     htmlFor="checkinDate"
@@ -702,7 +713,6 @@ const handleChange = (e) => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
-
 
                 <div className="mb-4">
                   <label
@@ -780,7 +790,7 @@ const handleChange = (e) => {
                     id="amount"
                     name="totalAmount"
                     value={formData.totalAmount}
-                     onChange={handleChange}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
@@ -788,17 +798,56 @@ const handleChange = (e) => {
                 <button
                   type="submit"
                   className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200"
+                  onClick={() => {
+                    handleSubmit();
+                    Paymentformclick();
+                    setPaymentPage("payment");
+                  }}
                 >
                   Submit
                 </button>
               </form>
-        
             </div>
           </div>
         </div>
+      )}
 
-      }
-
+      {/* minions worrking */}
+      {showPaymentPage && (
+        <>
+          {paymentpage === "payment" && (
+            <CSSTransition key="payment" classNames="page" timeout={300}>
+              <div className="page payment">
+                <div className="inner">
+                  <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto mt-10">
+                    <div className="text-center mb-6">
+                      <h1 className="text-2xl font-bold text-green-600">
+                        🎉 Booking Successful!
+                      </h1>
+                      <p className="text-gray-700 mt-2">
+                        Thank you for choosing us! Please select your payment
+                        method below.
+                      </p>
+                    </div>
+                    <div className="space-y-4">
+                      <button
+                        className="w-full bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
+                        onClick={handlePayNow}
+                      >
+                        Pay Now
+                      </button>
+                      <button className="w-full bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600">
+                        Pay at Hotel
+                      </button>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CSSTransition>
+          )}
+        </>
+      )}
     </>
   );
 };
