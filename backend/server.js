@@ -93,7 +93,7 @@ app.post('/create-booking-order', async (req, res) => {
 app.post("/create-order", async (req, res) => {
 
     try {
-        const { amount, currency, receipt, notes, checkInDate, checkOutDate, NoOfAdults, NoOfChildren, NoOfRooms, email } = req.body;
+        const { amount, currency, receipt } = req.body;
         const options = {
             amount: amount * 100,
             currency,
@@ -109,21 +109,7 @@ app.post("/create-order", async (req, res) => {
             amount: order.amount / 100,
             currency: order.currency,
             receipt: order.receipt,
-            notes: { checkInDate, checkOutDate, NoOfAdults, NoOfChildren, NoOfRooms, email },
-            status: order.status,
-            username,
-            email,
-            phoneNumber,
-            roomName,
-            totalAmount: amount,
-            checkInDate,
-            checkOutDate,
-            adults: NoOfAdults,
-            children: NoOfChildren,
-            rooms: NoOfRooms
         });
-
-
         await newOrder.save();
 
         res.json({
