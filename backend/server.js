@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/rooms', roomroute)
 
-const razorpay = new Razorpay({
+var razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
@@ -72,18 +72,19 @@ const sendEmail = async (to, subject, body) => {
 app.post("/create-order", async (req, res) => {
 
     try {
-        const { amount, currency, receipt } = req.body;
+        const { amount, currency, receipt,order_id } = req.body;
         const options = {
             amount: amount * 100,
             currency,
             receipt,
+            order_id,
         };
         const order = await razorpay.orders.create(options);
         const newOrder = new Order({
-            order_id: order.id,
-            amount: order.amount / 100,
+            amount: order.amount,
             currency: order.currency,
             receipt: order.receipt,
+            order_id: order.id,
         });
         await newOrder.save();
 
@@ -92,6 +93,7 @@ app.post("/create-order", async (req, res) => {
             order,
             message: "Order created and saved successfully!",
         });
+        console.log(order.id + "order id from server.js")
     } catch (error) {
         console.error("Error creating order:", error);
         res.status(500).json({
@@ -244,7 +246,7 @@ app.get("/fetch-payment-details", async (req, res) => {
             order_id: order.order_id,
             amount: order.amount,
             currency: order.currency,
-            payment_id: order.payment_id || null,
+            payment_id: order.payment_id,
             status: order.status,
         };
 

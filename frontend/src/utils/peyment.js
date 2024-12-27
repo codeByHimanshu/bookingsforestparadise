@@ -38,6 +38,7 @@ export const initializePayment = async (totalAmount) => {
       handler: async function (response) {
         alert("Payment success");
         console.log(order.order.id + "order id from payment js")
+
         try {
           const verifyResponse = await fetch(
             "http://localhost:5000/verify-payment",
@@ -64,6 +65,7 @@ export const initializePayment = async (totalAmount) => {
               razorpay_order_id: response.razorpay_order_id,
               status: "success",
               
+
             };
           } else {
             alert("Payment verification failed");

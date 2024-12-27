@@ -64,7 +64,8 @@ const RoomAvailabilityCheck = () => {
       alert("Please choose a room.");
       return;
     }
-    await initializePayment(totalAmount);
+  
+    await initializePayment(totalAmount); 
   };
   const bookingformclick = () => {
     setShowForm(!showForm);
@@ -831,7 +832,7 @@ const RoomAvailabilityCheck = () => {
                     <div className="space-y-4">
                       <button
                         className="w-full bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
-                        onClick={()=>handlePayNow(selectedRoomData.totalAmount,selectedRoomId,selectedRoomData.name)}
+                        onClick={()=>handlePayNow(selectedRoomData.totalAmount)}
                       >
                         Pay Now
                       </button>
