@@ -13,6 +13,7 @@ const connectDB = require("./config/db");
 const roomroute = require('./routes/roomRoutes.js')
 const migrate = require('./config/Migrate.js')
 const Book = require('./models/BookingDetails.js')
+const crypto = require('crypto');
 
 // Load environment variables
 
@@ -67,29 +68,7 @@ const sendEmail = async (to, subject, body) => {
         throw error;
     }
 };
-app.post('/create-booking-order', async (req, res) => {
-    const username=req.body.username;
-    const email=req.body.email;
-    const phoneNumber=req.body.phoneNumber;
-    const checkinDate=req.body.checkinDate;
-    const checkoutDate=req.body.checkoutDate;
-    const noofadults=req.body.noofadults;
-    const noofchildren=req.body.noofchildren;
-    const noofroom=req.body.noofroom;
-    const amount=req.body.amount;
 
-    if (!username || !email || !phoneNumber) {
-        return res.status(400).json({ error: "Please fill all the required fields" });
-    }
-    const newBooking=new Book({username,email,phoneNumber,checkinDate,checkoutDate,noofadults,noofchildren,noofroom,amount});
-    try {
-        newBooking.save();
-        return res.status(201).json({ message: "Booking created successfully", booking: newBooking });
-    } catch (error) {
-        console.error("Error creating booking:", error);
-        return res.status(500).json({ error: "Internal server error" });
-    }
-});
 app.post("/create-order", async (req, res) => {
 
     try {
@@ -99,11 +78,7 @@ app.post("/create-order", async (req, res) => {
             currency,
             receipt,
         };
-
-
         const order = await razorpay.orders.create(options);
-
-        // Save order to MongoDB
         const newOrder = new Order({
             order_id: order.id,
             amount: order.amount / 100,
@@ -127,29 +102,23 @@ app.post("/create-order", async (req, res) => {
     }
 });
 
-
-// Verify payment and send emails
 app.post("/verify-payment", async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-    const secret = razorpay.key_secret;
+    const secret=razorpay.key_secret;
     const body = razorpay_order_id + "|" + razorpay_payment_id;
 
     try {
         const isValidSignature = validateWebhookSignature(body, razorpay_signature, secret);
-
-        // Find the order in MongoDB
         const order = await Order.findOne({ order_id: razorpay_order_id });
-
+        console.log(order ,"order from the verify");
         if (isValidSignature && order) {
-            // Update order status to 'paid'
             order.status = "paid";
             order.payment_id = razorpay_payment_id;
             await order.save();
             const userEmailBody = `
     <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
         <h2 style="color: #4CAF50; text-align: center;">🎉 Booking Confirmed! 🎉</h2>
-        <p style="font-size: 16px; color: #555;">Dear ${order.name},</p>
+        <p style="font-size: 16px; color: #555;">Dear ${order.order.name},</p>
         <p style="font-size: 16px; color: #555;">Thank you for choosing Ratana International. We're thrilled to host you!</p>
         
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
@@ -159,19 +128,19 @@ app.post("/verify-payment", async (req, res) => {
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Order ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order_id}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order.order_id}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Amount Paid:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.amount / 100}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.order.amount / 100}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Currency:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.currency}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order.currency}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order.payment_id}</td>
             </tr>
         </table>
 
@@ -196,19 +165,19 @@ app.post("/verify-payment", async (req, res) => {
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Order ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order_id}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.prder.order_id}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Amount Paid:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.amount / 100}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.order.amount / 100}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Currency:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.currency}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order.currency}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order.payment_id}</td>
             </tr>
              <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-in Date:</td>
@@ -273,7 +242,7 @@ app.get("/fetch-payment-details", async (req, res) => {
 
         const paymentDetails = {
             order_id: order.order_id,
-            amount: order.amount / 100,
+            amount: order.amount,
             currency: order.currency,
             payment_id: order.payment_id || null,
             status: order.status,

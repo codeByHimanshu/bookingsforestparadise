@@ -58,14 +58,13 @@ const RoomAvailabilityCheck = () => {
 
   const navigate = useNavigate();
 
-  const handlePayNow = async (totalAmount, roomId, selectedRooms) => {
+  const handlePayNow = async (totalAmount) => {
+    console.log(totalAmount , "from handle paynow")
     if (!totalAmount) {
       alert("Please choose a room.");
       return;
     }
-    localStorage.setItem("roomId", roomId); // Save room ID
-    localStorage.setItem("selectedRooms", selectedRooms); // Save selected room
-    await initializePayment(totalAmount, roomId, selectedRooms); // Pass data to payment function
+    await initializePayment(totalAmount);
   };
   const bookingformclick = () => {
     setShowForm(!showForm);
