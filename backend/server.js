@@ -28,7 +28,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/rooms', roomroute)
 
-const razorpay = new Razorpay({
+var razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
@@ -67,37 +67,16 @@ const sendEmail = async (to, subject, body) => {
         throw error;
     }
 };
-app.post('/create-booking-order', async (req, res) => {
-    const username=req.body.username;
-    const email=req.body.email;
-    const phoneNumber=req.body.phoneNumber;
-    const checkinDate=req.body.checkinDate;
-    const checkoutDate=req.body.checkoutDate;
-    const noofadults=req.body.noofadults;
-    const noofchildren=req.body.noofchildren;
-    const noofroom=req.body.noofroom;
-    const amount=req.body.amount;
 
-    if (!username || !email || !phoneNumber) {
-        return res.status(400).json({ error: "Please fill all the required fields" });
-    }
-    const newBooking=new Book({username,email,phoneNumber,checkinDate,checkoutDate,noofadults,noofchildren,noofroom,amount});
-    try {
-        newBooking.save();
-        return res.status(201).json({ message: "Booking created successfully", booking: newBooking });
-    } catch (error) {
-        console.error("Error creating booking:", error);
-        return res.status(500).json({ error: "Internal server error" });
-    }
-});
 app.post("/create-order", async (req, res) => {
 
     try {
-        const { amount, currency, receipt } = req.body;
+        const { amount, currency, receipt,order_id } = req.body;
         const options = {
             amount: amount * 100,
             currency,
             receipt,
+            order_id,
         };
 
 
@@ -105,10 +84,10 @@ app.post("/create-order", async (req, res) => {
 
         // Save order to MongoDB
         const newOrder = new Order({
-            order_id: order.id,
-            amount: order.amount / 100,
+            amount: order.amount,
             currency: order.currency,
             receipt: order.receipt,
+            order_id: order.id,
         });
         await newOrder.save();
 
@@ -117,6 +96,7 @@ app.post("/create-order", async (req, res) => {
             order,
             message: "Order created and saved successfully!",
         });
+        console.log(order.id + "order id from server.js")
     } catch (error) {
         console.error("Error creating order:", error);
         res.status(500).json({
@@ -275,7 +255,7 @@ app.get("/fetch-payment-details", async (req, res) => {
             order_id: order.order_id,
             amount: order.amount / 100,
             currency: order.currency,
-            payment_id: order.payment_id || null,
+            payment_id: order.payment_id,
             status: order.status,
         };
 
