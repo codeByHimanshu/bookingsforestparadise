@@ -51,15 +51,30 @@ router.get('/room-type', async (req, res) => {
 
 })
 
-router.post("/", upload.single("image"), async (req, res) => {
-  const { name, price, available, availableRooms, amenities } = req.body;
-  const image = req.file ? req.file.path : null;
-
+router.post("/", async (req, res) => {
   try {
-    const newRoom = await Room.create({ name, price, available, image, availableRooms, amenities });
-    res.status(201).json({ success: true, data: newRoom });
+    const { availableRooms, name, price, available, image, amenities } = req.body;
+
+    if (!availableRooms || !name || !price || !image) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+    const newRoom = new Room({
+      availableRooms,
+      name,
+      price,
+      available: available !== undefined ? available : true, // Default to true if not provided
+      image,
+      amenities,
+    });
+
+    // Save the room to the database
+    const savedRoom = await newRoom.save();
+
+    // Respond with the saved room
+    res.status(201).json(savedRoom);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Error creating room:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 });
 

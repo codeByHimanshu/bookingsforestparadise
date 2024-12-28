@@ -58,15 +58,7 @@ const RoomAvailabilityCheck = () => {
 
   const navigate = useNavigate();
 
-  const handlePayNow = async (totalAmount) => {
-    console.log(totalAmount , "from handle paynow")
-    if (!totalAmount) {
-      alert("Please choose a room.");
-      return;
-    }
-  
-    await initializePayment(totalAmount); 
-  };
+ 
   const bookingformclick = () => {
     setShowForm(!showForm);
     setShowCards(!showCards);
@@ -197,6 +189,15 @@ const RoomAvailabilityCheck = () => {
         error.stack
       );
     }
+  };
+  const handlePayNow = async (totalAmount) => {
+    console.log(totalAmount , "from handle paynow")
+    if (!totalAmount) {
+      alert("Please choose a room.");
+      return;
+    }
+  
+    await initializePayment(totalAmount,formData.email); 
   };
 
   const handleChange = (e) => {
@@ -576,7 +577,7 @@ const RoomAvailabilityCheck = () => {
                         Back
                       </button>
                       {bookingDetails
-                        .filter((room) => room.id === selectedRoomId) // Filter by selected room ID
+                        .filter((room) => room.id === selectedRoomId)
                         .map((room) => (
                           <div className="room_page" key={room.id}>
                             <div className="room-card">
@@ -599,11 +600,8 @@ const RoomAvailabilityCheck = () => {
                                     room.availableRooms === 0 ? "disabled" : ""
                                   }`}
                                   onClick={() => {
-                                    console.log(name);
-                                    // console.log(selectedRoomData.name)
-                                    // console.log(selectedRoom.name)
-                                    bookNow(room.name); // Pass the room's name dynamically
-                                    bookingformclick(); // Call your form display function
+                                    bookNow(room.name); 
+                                    bookingformclick(); 
                                   }}
                                   disabled={room.availableRooms === 0}
                                 >

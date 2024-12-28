@@ -1,4 +1,4 @@
-export const initializePayment = async (totalAmount) => {
+export const initializePayment = async (totalAmount,email) => {
   try {
     const response = await fetch("http://localhost:5000/create-order", {
       method: "POST",
@@ -11,9 +11,12 @@ export const initializePayment = async (totalAmount) => {
         receipt: "receipt#1",
         notes: {},
         method: "card",
-        vpa: ""
+        vpa: "",
+        email:email
+
       }),
     });
+    console.log(response);
     const order = await response.json();
     if (order.error) {
       alert("Error: " + order.error);

@@ -72,7 +72,7 @@ const sendEmail = async (to, subject, body) => {
 app.post("/create-order", async (req, res) => {
 
     try {
-        const { amount, currency, receipt,order_id } = req.body;
+        const { amount, currency, receipt,order_id,email } = req.body;
         const options = {
             amount: amount * 100,
             currency,
@@ -85,8 +85,10 @@ app.post("/create-order", async (req, res) => {
             currency: order.currency,
             receipt: order.receipt,
             order_id: order.id,
+            email:email
         });
         await newOrder.save();
+        console.log(newOrder,"new order from server.js")
 
         res.json({
             success: true,
@@ -108,7 +110,6 @@ app.post("/verify-payment", async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     const secret=razorpay.key_secret;
     const body = razorpay_order_id + "|" + razorpay_payment_id;
-
     try {
         const isValidSignature = validateWebhookSignature(body, razorpay_signature, secret);
         const order = await Order.findOne({ order_id: razorpay_order_id });
@@ -117,10 +118,10 @@ app.post("/verify-payment", async (req, res) => {
             order.status = "paid";
             order.payment_id = razorpay_payment_id;
             await order.save();
-            const userEmailBody = `
+            const userEmailBody = `            
     <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
         <h2 style="color: #4CAF50; text-align: center;">🎉 Booking Confirmed! 🎉</h2>
-        <p style="font-size: 16px; color: #555;">Dear ${order.order.name},</p>
+        <p style="font-size: 16px; color: #555;">Dear ${order.email},</p>
         <p style="font-size: 16px; color: #555;">Thank you for choosing Ratana International. We're thrilled to host you!</p>
         
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
@@ -130,19 +131,20 @@ app.post("/verify-payment", async (req, res) => {
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Order ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order.order_id}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order_id}</td>
             </tr>
+    
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Amount Paid:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.order.amount / 100}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.amount / 100}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Currency:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order.currency}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.currency}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order.payment_id}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
             </tr>
         </table>
 
@@ -167,19 +169,19 @@ app.post("/verify-payment", async (req, res) => {
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Order ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.prder.order_id}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order_id}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Amount Paid:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.order.amount / 100}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.amount / 100}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Currency:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order.currency}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.currency}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order.payment_id}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
             </tr>
              <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-in Date:</td>
@@ -192,6 +194,10 @@ app.post("/verify-payment", async (req, res) => {
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rooms:</td>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.rooms}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Email:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.email}</td>
                         </tr>
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Guests:</td>
