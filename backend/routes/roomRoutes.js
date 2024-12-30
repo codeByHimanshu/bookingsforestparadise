@@ -78,7 +78,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Update room availability
 router.put("/:id", async (req, res) => {
   const { available } = req.body;
   try {
@@ -94,9 +93,28 @@ router.put("/:id", async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
-
-
-
+router.put("/update-room-number",async(req,res)=>{
+    const {name}=req.query;
+    if(!name){
+      return res.status(404).json({
+        error:"query parameter is required"
+      })
+    }
+    try{
+      const noOfRooms=await Room.find({name:new RegExp(name,'i')});
+      if(noOfRooms.length===0){
+        return res.status(400).json({
+          message:"no room find with this id"
+        }
+        )
+      }
+      res.status(201).json({noOfRooms})
+    }catch(error){
+      return res.status(400).json({
+        error
+      })
+    }
+});
 router.post('/bookings', async (req, res) => {
   try {
     const {
@@ -115,8 +133,6 @@ router.post('/bookings', async (req, res) => {
     if (!username || !email || !phoneNumber || !checkInDate || !checkOutDate || !adults || !rooms || !totalAmount) {
       return res.status(400).json({ error: 'All fields are required.' });
     }
-
-  
     const newBooking = new Book({
       username,
       email,

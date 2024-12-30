@@ -106,6 +106,20 @@ app.post("/create-order", async (req, res) => {
     }
 });
 
+app.get('/get-email',async(req,res)=>{
+    try{
+        const email=req.body.email
+        const data=await Book.findOne({email});
+        if(email){
+             res.status(200).json({data} );
+        }
+    }catch(error){
+        res.status(404).json({
+            error:error.message
+        })
+    }
+})
+
 app.post("/verify-payment", async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     const secret=razorpay.key_secret;
@@ -118,6 +132,12 @@ app.post("/verify-payment", async (req, res) => {
             order.status = "paid";
             order.payment_id = razorpay_payment_id;
             await order.save();
+            // console.time('fetch data')
+            // const userBooking=await fetch('http://localhost:5000/get-email');
+            // console.timeEnd('ends fetching data');
+            // console.log(userBooking,"user booking")
+            // const userBookingData=await userBooking.json();
+            // console.log(userBookingData,"user booking data")
             const userEmailBody = `            
     <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
         <h2 style="color: #4CAF50; text-align: center;">🎉 Booking Confirmed! 🎉</h2>
@@ -208,20 +228,19 @@ app.post("/verify-payment", async (req, res) => {
         <p style="text-align: center; font-size: 14px; color: #777;">📍 Admin Dashboard - Ratana International</p>
     </div>
         `;
-            await sendEmail(process.env.EMAIL_USER, "Dear ..... your stay is confirmed", userEmailBody);
+            await sendEmail('aryan056400@gmail.com', "Dear ..... your stay is confirmed", userEmailBody);
             await sendEmail(process.env.ADMIN_EMAIL, "New Booking Received", adminEmailBody);
 
             res.status(200).json({ status: "ok" });
             console.log("Payment verification successful and emails sent.");
         } else {
-            // Payment verification failed email content
             const failureDetails = `
                 <h3>Booking Failed</h3>
                 <p>Order ID: ${razorpay_order_id}</p>
                 <p>Reason: Payment verification failed.</p>
             `;
             if (order) {
-                await sendEmail(order.notes.EMAIL_USER, "Booking Failed", failureDetails);
+                await sendEmail('aryan056400@gmail.com', "Booking Failed", failureDetails);
             }
             await sendEmail(process.env.ADMIN_EMAIL, "Booking Payment Failed", failureDetails);
 

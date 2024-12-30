@@ -809,8 +809,6 @@ const RoomAvailabilityCheck = () => {
           </div>
         </div>
       )}
-
-      {/* minions worrking */}
       {showPaymentPage && (
         <>
           {paymentpage === "payment" && (
