@@ -43,6 +43,7 @@ const RoomAvailabilityCheck = () => {
     children: children,
     rooms: rooms,
     totalAmount: selectedRoomData.totalAmount || "",
+    
   });
 
   useEffect(() => {
@@ -53,6 +54,7 @@ const RoomAvailabilityCheck = () => {
       adults: adults,
       children: children,
       rooms: rooms,
+      roomType: selectedRoomData.rooms ? selectedRoomData.rooms[0].name : "",
       totalAmount: selectedRoomData.totalAmount || "",
     }));
   }, [checkInDate, checkOutDate, adults, children, rooms, selectedRoomData]);
@@ -154,7 +156,6 @@ const RoomAvailabilityCheck = () => {
   };
 
   const handleSubmit = async (e) => {
-    // e.preventDefault();
     if (
       !formData.username ||
       !formData.email ||
@@ -163,6 +164,7 @@ const RoomAvailabilityCheck = () => {
       !formData.checkOutDate ||
       !formData.adults ||
       !formData.rooms ||
+      !formData.roomType ||
       !formData.totalAmount
     ) {
       alert("All fields are required.");
@@ -690,7 +692,7 @@ const RoomAvailabilityCheck = () => {
           </>
         )}
       </div>
-      {showForm && selectedRoomData && (
+      {showForm && selectedRoomData && bookingDetails && (
         <div className="page next">
           <div className="inner">
             <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -830,6 +832,22 @@ const RoomAvailabilityCheck = () => {
                     value={formData.rooms}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                   <div className="mb-4">
+                  <label
+                  htmlFor="roomType"
+                  className="block text-gray-600 font-medium mb-2"
+                  >
+                  Room Type
+                  </label>
+                  <input
+                  type="text"
+                  id="roomType"
+                  name="roomType"
+                  value={selectedRoomData.rooms ? selectedRoomData.rooms[0].name : ""}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
                 <div className="mb-4">

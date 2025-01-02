@@ -75,14 +75,14 @@ app.post("/create-order", async (req, res) => {
   try {
     const { amount, currency, receipt, order_id, email } = req.body;
     const options = {
-      amount: amount*100,
+      amount: amount * 100,
       currency,
       receipt,
       order_id,
     };
     const order = await razorpay.orders.create(options);
     const newOrder = new Order({
-      amount: order.amount/100,
+      amount: order.amount / 100,
       currency: order.currency,
       receipt: order.receipt,
       order_id: order.id,
@@ -153,72 +153,50 @@ app.post("/verify-payment", async (req, res) => {
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Name:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                  bookings.username
-                }</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.username}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Contact:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                  bookings.phoneNumber
-                }</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.phoneNumber}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Email:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                  bookings.email
-                }</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.email}</td>
             </tr>
              <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-in Date:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                              bookings.checkInDate
-                            }</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.checkInDate}</td>
                         </tr>
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-out Date:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                              bookings.checkOutDate
-                            }</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.checkOutDate}</td>
                         </tr>
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rooms:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                              bookings.rooms
-                            }</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.rooms}</td>
                         </tr>
                       
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Guests:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Adults: ${
-                              bookings.adults
-                            }, Children: ${bookings.children}</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Adults: ${bookings.adults}, Children: ${bookings.children}</td>
                         </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Order ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                  order.order_id
-                }</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order_id}</td>
             </tr>
     
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Amount Paid:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${
-                  order.amount
-                }</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.amount}</td>
             </tr>
          
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                  order.payment_id
-                }</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment Status:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                  order.status
-                }</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.status}</td>
             </tr>
         </table>
 
@@ -241,53 +219,53 @@ app.post("/verify-payment", async (req, res) => {
                 <th style="padding: 10px;">Information</th>
             </tr>
             <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Name:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.username}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Email_id:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.email}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">contact details:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.phoneNumber}</td>
+            </tr>
+            <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Order ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                  order.order_id
-                }</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order_id}</td>
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Amount Paid:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${
-                  order.amount
-                }</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.amount}</td>
             </tr>
            
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                  order.payment_id
-                }</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
             </tr>
              <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-in Date:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                              bookings.checkInDate
-                            }</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.checkInDate}</td>
                         </tr>
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-out Date:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                              bookings.checkOutDate
-                            }</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.checkOutDate}</td>
                         </tr>
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rooms:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                              bookings.rooms
-                            }</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.rooms}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">roomType:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.roomType}</td>
                         </tr>
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Email:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${
-                              order.email
-                            }</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.email}</td>
                         </tr>
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Guests:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Adults: ${
-                              bookings.adults
-                            }, Children: ${bookings.children}</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Adults: ${bookings.adults}, Children: ${bookings.children}</td>
                         </tr>
         </table>
         <p style="font-size: 14px; color: #777;">Please log into the admin dashboard for more details. If you have any questions, contact the support team.</p>
