@@ -108,11 +108,12 @@ router.post('/bookings', async (req, res) => {
       adults,
       children,
       rooms,
+      roomType,
       totalAmount
     } = req.body;
 
  
-    if (!username || !email || !phoneNumber || !checkInDate || !checkOutDate || !adults || !rooms || !totalAmount) {
+    if (!username || !email || !phoneNumber || !checkInDate || !checkOutDate || !adults || !rooms || !roomType || !totalAmount) {
       return res.status(400).json({ error: 'All fields are required.' });
     }
 
@@ -126,6 +127,7 @@ router.post('/bookings', async (req, res) => {
       adults,
       children,
       rooms,
+      roomType,
       totalAmount
     });
 
