@@ -32,6 +32,7 @@ const RoomAvailabilityCheck = () => {
   const [selectedRoomData, setSelectedRoomData] = useState([]);
   const [paymentpage, setPaymentPage] = useState("start");
   const [showPaymentPage, setshowPaymentPage] = useState(false);
+  const [roomType,setRoomType]=useState("");
   const [formData, setFormData] = useState({
     username: "",
     phoneNumber: "",
@@ -135,6 +136,8 @@ const RoomAvailabilityCheck = () => {
         )}`
       );
       const data = await response.json();
+      setRoomType(data.rooms[0].name);
+      console.log(data ,"data from book now");
       if (data.error) {
         console.error(data.error);
       } else {
@@ -206,6 +209,57 @@ const RoomAvailabilityCheck = () => {
       ...prevState,
       [name]: value,
     }));
+  };
+  const handleRoomAfterBooking=async(name,roomsToBook)=>{
+    console.log("handle room after called");
+    try{
+      const response = await fetch(
+        `http://localhost:5000/api/rooms/room-type?name=${encodeURIComponent(
+          name
+        )}`
+      );
+      const data=await response.json();
+      console.log(data);
+      if (data.error) {
+        console.log(data.error);
+      } else {
+        const currentAvailableRooms = parseFloat(data.rooms[0].availableRooms || 0);
+        const updatedAvailableRooms = currentAvailableRooms - roomsToBook;
+        const updateResponse = await fetch(
+          `http://localhost:5000/api/rooms/update`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              name,
+              availableRooms: updatedAvailableRooms
+            })
+          }
+        );
+        const updateData = await updateResponse.json();
+  
+        if (updateData.error) {
+          console.log(updateData.error);
+        } else {
+          console.log("Room count updated successfully");
+        }
+      }
+    } catch (error) {
+      console.error("Error in updating rooms:", error);
+    }
+  };
+
+  const handleButtonClick = () => {
+    try {
+      handleSubmit();
+      Paymentformclick();
+      setPaymentPage("payment");
+      handleRoomAfterBooking(roomType, formData.rooms);
+    } catch (error) {
+      console.error("Error occurred during button click:", error);
+    }
   };
 
   return (
@@ -295,6 +349,7 @@ const RoomAvailabilityCheck = () => {
                         <button className="go-back" onClick={goBack}>
                           Go Back
                         </button>
+
                         <div className="room_page">
                           <div className="room-card">
                             {bookingDetails
@@ -354,6 +409,7 @@ const RoomAvailabilityCheck = () => {
                           </div>
                         </div>
                       </div>
+
                       <div className="inner">
                         <div className="room_page">
                           <div className="room-card">
@@ -494,7 +550,7 @@ const RoomAvailabilityCheck = () => {
                         <div className="room_page">
                           <div className="room-card">
                             {bookingDetails
-                              .filter((room) => room.name === "Suite Room")
+                              .filter((room) => room.name === "Deluxe Room")
                               .map((room) => (
                                 <>
                                   <img
@@ -503,7 +559,7 @@ const RoomAvailabilityCheck = () => {
                                     className="room-image"
                                   />
                                   <div className="amenities">
-                                    <h2>Suite Room</h2>
+                                    <h2>Deluxe Room</h2>
                                     <div className="amenities-grid">
                                       <h3>
                                         <FaWifi /> Free Wifi{" "}
@@ -796,11 +852,7 @@ const RoomAvailabilityCheck = () => {
                 <button
                   type="submit"
                   className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200"
-                  onClick={() => {
-                    handleSubmit();
-                    Paymentformclick();
-                    setPaymentPage("payment");
-                  }}
+                  onClick={handleButtonClick}
                 >
                   Submit
                 </button>

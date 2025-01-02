@@ -1,6 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-const Room = require("../models/Room");
+const Room = require('../models/Room')
 const migrate = require("../config/Migrate");
 const Book = require("../models/BookingDetails");
 
@@ -24,6 +24,7 @@ router.get("/", async (req, res) => {
     const rooms = await Room.find({ available: true });
     res.json(rooms);
   } catch (error) {
+    console.log(error, "from get request")
     res.status(500).json({ message: "Server Error" });
   }
 });
@@ -78,43 +79,41 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
-  const { available } = req.body;
+router.put("/update", async (req, res) => {
+  const { name, availableRooms } = req.body;
+
+  if (!name || availableRooms === undefined) {
+    return res.status(400).json({
+      error: "Name and availableRooms are required"
+    });
+  }
+
   try {
-    const room = await Room.findById(req.params.id);
-    if (room) {
-      room.available = available;
-      const updatedRoom = await room.save();
-      res.json(updatedRoom);
-    } else {
-      res.status(404).json({ message: "Room not found" });
+    const room = await Room.findOneAndUpdate(
+      { name: new RegExp(name, "i") }, 
+      { availableRooms }, 
+      { new: true } 
+    );
+
+    if (!room) {
+      return res.status(404).json({
+        message: "No room found with this name"
+      });
     }
+
+    res.status(200).json({
+      message: "Room count updated successfully",
+      room
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+    console.error("Error updating room count:", error);
+    res.status(500).json({
+      error: "An error occurred while updating the room count"
+    });
   }
 });
-router.put("/update-room-number",async(req,res)=>{
-    const {name}=req.query;
-    if(!name){
-      return res.status(404).json({
-        error:"query parameter is required"
-      })
-    }
-    try{
-      const noOfRooms=await Room.find({name:new RegExp(name,'i')});
-      if(noOfRooms.length===0){
-        return res.status(400).json({
-          message:"no room find with this id"
-        }
-        )
-      }
-      res.status(201).json({noOfRooms})
-    }catch(error){
-      return res.status(400).json({
-        error
-      })
-    }
-});
+
+
 router.post('/bookings', async (req, res) => {
   try {
     const {
@@ -129,7 +128,7 @@ router.post('/bookings', async (req, res) => {
       totalAmount
     } = req.body;
 
- 
+
     if (!username || !email || !phoneNumber || !checkInDate || !checkOutDate || !adults || !rooms || !totalAmount) {
       return res.status(400).json({ error: 'All fields are required.' });
     }
@@ -145,12 +144,12 @@ router.post('/bookings', async (req, res) => {
       totalAmount
     });
 
-  
+
     await newBooking.save()
-    if(newBooking){
+    if (newBooking) {
       return res.status(201).json({ message: 'Booking created successfully.' });
     }
-    
+
   } catch (error) {
     console.error('Error creating booking:', error.message, error.stack);
     res.status(500).json({ error: 'An error occurred while processing your request.' });
