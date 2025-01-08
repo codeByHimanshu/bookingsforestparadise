@@ -83,6 +83,7 @@ const RoomAvailabilityCheck = () => {
     };
     fetchRooms();
   }, []);
+  console.log(roomData, "room data");
 
   // Check availability logic
   const checkAvailability = () => {

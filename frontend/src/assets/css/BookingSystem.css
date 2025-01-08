@@ -10,7 +10,7 @@
   animation: fadeIn 0.5s ease-in-out;
   display: flex;
   flex-direction: column;
-  border: 4px solid #0056b3;
+  border: 4px solid #455d58;
 }
 /* .page-enter {
   opacity: 0;
@@ -82,15 +82,15 @@
   margin-bottom: 15px;
 }
 
-.button {
+/* .button {
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #455d58;
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
+} */
 
 .button:hover {
   background-color: #0056b3;
@@ -154,7 +154,7 @@
   outline: none;
 }
 
-button {
+/* button {
   padding: 10px;
   background-color: #007bff;
   color: #fff;
@@ -164,7 +164,7 @@ button {
   cursor: pointer;
   transition: background-color 0.3s ease;
   animation: fadeInUp 0.5s ease;
-}
+} */
 
 button:disabled {
   background-color: #ccc;
@@ -260,11 +260,11 @@ button.pay-now:hover {
 }
 
 /* Add person button styling */
-button {
+/* button {
   margin: 5px 5px;
   font-size: 0.9em;
   display: inline-block;
-}
+} */
 
 button.add-person {
   background-color: #f9c846;
@@ -328,10 +328,10 @@ button.add-room:hover {
     padding: 15px;
   }
 
-  button {
+  /* button {
     font-size: 0.9em;
     padding: 10px;
-  }
+  } */
 }
 
 
@@ -432,7 +432,7 @@ button.add-room:hover {
     margin-top: 20px;
   }
   
-  .button {
+  /* .button {
     margin-top: 20px;
     padding: 10px 20px;
     background-color: #007bff;
@@ -441,11 +441,11 @@ button.add-room:hover {
     border-radius: 5px;
     cursor: pointer;
     text-align: center;
-  }
+  } */
   
-  .button:hover {
+  /* .button:hover {
     background-color: #0056b3;
-  }
+  } */
   .room-check-form {
     padding: 10px;
   }
@@ -469,10 +469,10 @@ button.add-room:hover {
     gap: 15px;
     margin-top: 20px;
   }
-  .button {
+  /* .button {
     width: 100%;
     padding: 10px;
-  }
+  } */
 }
 
 @media (max-width: 480px) {
@@ -507,17 +507,17 @@ button.add-room:hover {
     gap: 15px;
     margin-top: 20px;
   }
-  
+/*   
   .button {
     margin-top: 20px;
     padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
+    /* background-color: #007bff; */
+    /* color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    text-align: center;
-  }
+    text-align: center; */
+  /* } */ 
   
   .button:hover {
     background-color: #0056b3;
@@ -539,9 +539,9 @@ button.add-room:hover {
   .amenities {
     margin: 10px auto;
   }
-
+/* 
   .button {
     font-size: 14px;
     padding: 8px;
-  }
+  } */
 }

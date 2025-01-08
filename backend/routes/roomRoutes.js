@@ -21,7 +21,7 @@ const upload = multer({ storage });
 // Fetch all available rooms
 router.get("/", async (req, res) => {
   try {
-    const rooms = await Room.find({ available: true });
+    const rooms = await Room.find();
     res.json(rooms);
   } catch (error) {
     console.log(error, "from get request")
