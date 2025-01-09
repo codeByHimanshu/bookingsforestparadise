@@ -1,20 +1,18 @@
 import { useState, useEffect } from "react";
 import Header from "./components/Header";
+import { checkInDate, checkOutDate, selectedRooms,price } from "./store/atoms";
+import { useRecoilState } from "recoil";
+import { Link } from "react-router-dom";
 
 const RoomAvailabilityCheck = () => {
   const [bookingDetails, setBookingDetails] = useState([]);
   const [roomData, setRoomData] = useState([]);
-  const [checkInDate, setCheckInDate] = useState("");
-  const [checkOutDate, setCheckOutDate] = useState("");
-  const [night, setNight] = useState(0);
-  const [children, setChildren] = useState(0);
-  const [adults, setAdults] = useState(0);
-  const [selectedRooms, setSelectedRooms] = useState({});
   const [showButtonClick4, setShowButtonClick4] = useState(false);
-
+  const [date, setDate] = useRecoilState(checkInDate);
+  const [selectRooms, setSelectRoom] = useRecoilState(selectedRooms);
+  const [money,setMoney]=useRecoilState(price);
   const handleAddRoomClick4 = () => {
     setShowButtonClick4(true);
-    console.log("Add Room button clicked");
   };
   useEffect(() => {
     const fetchRooms = async () => {
@@ -32,28 +30,26 @@ const RoomAvailabilityCheck = () => {
   // test check
 
   const handleAddRoom = (roomname) => {
-    setSelectedRooms((prev) => {
+    setSelectRoom((prev) => {
       const count = prev[roomname] ? prev[roomname] + 1 : 1;
       return { ...prev, [roomname]: count };
     });
-    console.log("selectedrooms from the handleaddroom ", selectedRooms);
   };
   const handleRemoveRoom = (roomname) => {
-    setSelectedRooms((prev) => {
+    setSelectRoom((prev) => {
       const count = prev[roomname] ? prev[roomname] - 1 : 0;
       const updated = { ...prev, [roomname]: count };
       if (updated[roomname] === 0) delete updated[roomname];
-      console.log("selectedrooms from the handleremoveroom ", selectedRooms);
       return updated;
     });
   };
   const getTotalPrice = () => {
-    return Object.entries(selectedRooms).reduce((total, [roomId, count]) => {
+    return Object.entries(selectRooms).reduce((total, [roomId, count]) => {
       const room = roomData.find((room) => room.name === roomId);
       return total + room.price * count;
     }, 0);
   };
-  console.log(roomData);
+  setMoney(getTotalPrice());
   return (
     <>
       <Header />
@@ -63,14 +59,22 @@ const RoomAvailabilityCheck = () => {
             <form>
               <div className="form-group">
                 <label htmlFor="checkInDate">Check-In Date</label>
-                <input type="date" id="checkInDate"></input>
+                <input type="date" id="checkInDate" defaultValue={date}></input>
               </div>
               <div className="form-group">
                 <label htmlFor="checkOutDate">Check-Out Date</label>
-                <input type="date" id="checkOutDate"></input>
+                <input
+                  type="date"
+                  id="checkOutDate"
+                  defaultValue={date}
+                ></input>
               </div>
               <div className="">
-                <button style={{backgroundColor:"#455d58" ,color:"#ffffff"}} className="cAvail p-4 rounded-2xl font-semibold" type="button">
+                <button
+                  style={{ backgroundColor: "#455d58", color: "#ffffff" }}
+                  className="cAvail p-4 rounded-2xl font-semibold"
+                  type="button"
+                >
                   Check Availability
                 </button>
               </div>
@@ -131,18 +135,20 @@ const RoomAvailabilityCheck = () => {
                             </div>
                             <div className="flex-row mt-2 static">
                               <div style={{ color: "#666666" }} className="">
-                                Price for <span>{selectedRooms[room.name] || 0 }</span> Night
+                                Price for{" "}
+                                <span>{selectRooms[room.name] || 0}</span> Night
                               </div>
                               <div className="list-none flex space-x-1">
                                 <div style={{ color: "#666666" }}>
-                                <span>{selectedRooms[room.name] || 0 }</span> Adult,
+                                  <span>{selectRooms[room.name] || 0}</span>{" "}
+                                  Adult,
                                 </div>
                                 <div style={{ color: "#666666" }}>
-                                <span>{selectedRooms[room.name] || 0 }</span> Child,
+                                  <span>{selectRooms[room.name] || 0}</span>{" "}
+                                  Child,
                                 </div>
                                 <div style={{ color: "#666666" }}>
-                                 
-                                  {selectedRooms[room.name] || 0} Room
+                                  {selectRooms[room.name] || 0} Room
                                 </div>
                               </div>
                             </div>
@@ -186,7 +192,7 @@ const RoomAvailabilityCheck = () => {
                                     </svg>
                                   </button>
                                   <span className="m-2 px-2 font-bold text-2xl">
-                                    <span>{selectedRooms[room.name] || 0 }</span>
+                                    <span>{selectRooms[room.name] || 0}</span>
                                   </span>
                                   <button
                                     className="m-2 px-2 rounded-lg"
@@ -221,8 +227,7 @@ const RoomAvailabilityCheck = () => {
                                   style={{
                                     backgroundColor: "#455d58",
                                     borderRadius: "8px",
-                                    color:"#ffffff",
-                                    
+                                    color: "#ffffff",
                                   }}
                                   onClick={handleAddRoomClick4}
                                 >
@@ -250,13 +255,13 @@ const RoomAvailabilityCheck = () => {
               <h1 className="text-2xl font-semibold">Booking Summary</h1>
             </div>
             <div className="mt-2 font-semibold " style={{ color: "#444" }}>
-              Dates : <span>02/01/2025</span> - <span>03/01/2025</span>
+              Dates : <span>{date}</span> - <span>{date}</span>
             </div>
-            {Object.keys(selectedRooms).length > 0 && (
+            {Object.keys(selectRooms).length > 0 && (
               <div className="mt-4">
-                {Object.entries(selectedRooms).map(([roomId, cnt]) => {
+                {Object.entries(selectRooms).map(([roomId, cnt]) => {
                   const room = roomData.find((room) => room.name === roomId);
-                  console.log(room.price, "from booking summary got clikced");
+                  // console.log(room.price, "from booking summary got clikced");
                   return (
                     <div className="" key={room.id}>
                       <div className="">
@@ -280,10 +285,19 @@ const RoomAvailabilityCheck = () => {
                 style={{ color: "#455d58" }}
                 id=""
               >
-                Total: {getTotalPrice()}
+                Total: {money}
               </span>
             </div>
-            <div><button className="font-semibold text-2xl  text-white p-3 rounded" style={{backgroundColor:"#455d58"}}>Book Now</button></div>
+            <div>
+              <Link to="/form">
+                <button
+                  className="font-semibold text-2xl  text-white p-3 rounded"
+                  style={{ backgroundColor: "#455d58" }}
+                >
+                  Book Now
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
