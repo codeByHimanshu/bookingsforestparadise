@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Header from "./components/Header";
-import { checkInDate, checkOutDate, selectedRooms,price } from "./store/atoms";
+import { checkInDate, checkOutDate, selectedRooms,price, global_count } from "./store/atoms";
 import { useRecoilState } from "recoil";
 import { Link } from "react-router-dom";
 
@@ -11,6 +11,7 @@ const RoomAvailabilityCheck = () => {
   const [date, setDate] = useRecoilState(checkInDate);
   const [selectRooms, setSelectRoom] = useRecoilState(selectedRooms);
   const [money,setMoney]=useRecoilState(price);
+  const [count,setCount]=useRecoilState(global_count)
   const handleAddRoomClick4 = () => {
     setShowButtonClick4(true);
   };
@@ -50,6 +51,9 @@ const RoomAvailabilityCheck = () => {
     }, 0);
   };
   setMoney(getTotalPrice());
+  useEffect(()=>{
+    setCount(Object.values(selectRooms).reduce((sum, num) => sum + num, 0));
+  },[selectRooms])
   return (
     <>
       <Header />

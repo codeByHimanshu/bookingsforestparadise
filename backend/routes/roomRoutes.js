@@ -90,9 +90,9 @@ router.put("/update", async (req, res) => {
 
   try {
     const room = await Room.findOneAndUpdate(
-      { name: new RegExp(name, "i") }, 
-      { availableRooms }, 
-      { new: true } 
+      { name: new RegExp(name, "i") },
+      { availableRooms },
+      { new: true }
     );
 
     if (!room) {
@@ -120,37 +120,41 @@ router.post('/bookings', async (req, res) => {
       username,
       email,
       phoneNumber,
+      NoOfPeople,
+      NoOfRooms,
       checkInDate,
       checkOutDate,
-      adults,
-      children,
-      rooms,
-      roomType,
+      room,
       totalAmount
     } = req.body;
-
- 
-    if (!username || !email || !phoneNumber || !checkInDate || !checkOutDate || !adults || !rooms || !roomType || !totalAmount) {
+    if (
+      !username || 
+      !email || 
+      !phoneNumber || 
+      !NoOfPeople || 
+      !NoOfRooms || 
+      !checkInDate || 
+      !checkOutDate || 
+      !room || 
+      !totalAmount
+    ) {
       return res.status(400).json({ error: 'All fields are required.' });
     }
     const newBooking = new Book({
       username,
       email,
       phoneNumber,
+      NoOfPeople,
+      NoOfRooms,
       checkInDate,
       checkOutDate,
-      adults,
-      children,
-      rooms,
-      roomType,
+      room,
       totalAmount
     });
+    await newBooking.save();
+    console.log(newBooking ,"new booking from the routes")
 
-
-    await newBooking.save()
-    if (newBooking) {
-      return res.status(201).json({ message: 'Booking created successfully.' });
-    }
+    return res.status(201).json({ message: 'Booking created successfully.' });
 
   } catch (error) {
     console.error('Error creating booking:', error.message, error.stack);

@@ -19,3 +19,7 @@ export const price=atom({
     key:"price",
     default:0
 })
+export const global_count=atom({
+    key:"global_atom",
+    default:0
+})

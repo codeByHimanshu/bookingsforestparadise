@@ -26,13 +26,14 @@ const RoomAvailabilityCheck = () => {
   const [message, setMessage] = useState("");
   const [showCards, setShowCards] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [roomData, setRoomData] = useState([]); // Correct state for room data
+  const [roomData, setRoomData] = useState([]);
   const [bookingDetails, setBookingDetails] = useState([]);
   const [page, setPage] = useState("start");
   const [selectedRoomData, setSelectedRoomData] = useState([]);
   const [paymentpage, setPaymentPage] = useState("start");
   const [showPaymentPage, setshowPaymentPage] = useState(false);
-  const [roomType,setRoomType]=useState("");
+  const [roomType, setRoomType] = useState("");
+
   const [formData, setFormData] = useState({
     username: "",
     phoneNumber: "",
@@ -43,7 +44,6 @@ const RoomAvailabilityCheck = () => {
     children: children,
     rooms: rooms,
     totalAmount: selectedRoomData.totalAmount || "",
-    
   });
 
   useEffect(() => {
@@ -61,7 +61,6 @@ const RoomAvailabilityCheck = () => {
 
   const navigate = useNavigate();
 
- 
   const bookingformclick = () => {
     setShowForm(!showForm);
     setShowCards(!showCards);
@@ -140,7 +139,7 @@ const RoomAvailabilityCheck = () => {
       );
       const data = await response.json();
       setRoomType(data.rooms[0].name);
-      console.log(data ,"data from book now");
+      console.log(data, "data from book now");
       if (data.error) {
         console.error(data.error);
       } else {
@@ -197,13 +196,13 @@ const RoomAvailabilityCheck = () => {
     }
   };
   const handlePayNow = async (totalAmount) => {
-    console.log(totalAmount , "from handle paynow")
+    console.log(totalAmount, "from handle paynow");
     if (!totalAmount) {
       alert("Please choose a room.");
       return;
     }
-  
-    await initializePayment(totalAmount,formData.email); 
+
+    await initializePayment(totalAmount, formData.email);
   };
 
   const handleChange = (e) => {
@@ -213,36 +212,38 @@ const RoomAvailabilityCheck = () => {
       [name]: value,
     }));
   };
-  const handleRoomAfterBooking=async(name,roomsToBook)=>{
+  const handleRoomAfterBooking = async (name, roomsToBook) => {
     console.log("handle room after called");
-    try{
+    try {
       const response = await fetch(
         `http://localhost:5000/api/rooms/room-type?name=${encodeURIComponent(
           name
         )}`
       );
-      const data=await response.json();
+      const data = await response.json();
       console.log(data);
       if (data.error) {
         console.log(data.error);
       } else {
-        const currentAvailableRooms = parseFloat(data.rooms[0].availableRooms || 0);
+        const currentAvailableRooms = parseFloat(
+          data.rooms[0].availableRooms || 0
+        );
         const updatedAvailableRooms = currentAvailableRooms - roomsToBook;
         const updateResponse = await fetch(
           `http://localhost:5000/api/rooms/update`,
           {
             method: "PUT",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
               name,
-              availableRooms: updatedAvailableRooms
-            })
+              availableRooms: updatedAvailableRooms,
+            }),
           }
         );
         const updateData = await updateResponse.json();
-  
+
         if (updateData.error) {
           console.log(updateData.error);
         } else {
@@ -412,7 +413,6 @@ const RoomAvailabilityCheck = () => {
                           </div>
                         </div>
                       </div>
-
                       <div className="inner">
                         <div className="room_page">
                           <div className="room-card">
@@ -659,8 +659,8 @@ const RoomAvailabilityCheck = () => {
                                     room.availableRooms === 0 ? "disabled" : ""
                                   }`}
                                   onClick={() => {
-                                    bookNow(room.name); 
-                                    bookingformclick(); 
+                                    bookNow(room.name);
+                                    bookingformclick();
                                   }}
                                   disabled={room.availableRooms === 0}
                                 >
@@ -835,20 +835,24 @@ const RoomAvailabilityCheck = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
-                   <div className="mb-4">
+                <div className="mb-4">
                   <label
-                  htmlFor="roomType"
-                  className="block text-gray-600 font-medium mb-2"
+                    htmlFor="roomType"
+                    className="block text-gray-600 font-medium mb-2"
                   >
-                  Room Type
+                    Room Type
                   </label>
                   <input
-                  type="text"
-                  id="roomType"
-                  name="roomType"
-                  value={selectedRoomData.rooms ? selectedRoomData.rooms[0].name : ""}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    type="text"
+                    id="roomType"
+                    name="roomType"
+                    value={
+                      selectedRoomData.rooms
+                        ? selectedRoomData.rooms[0].name
+                        : ""
+                    }
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
                 <div className="mb-4">
@@ -899,14 +903,15 @@ const RoomAvailabilityCheck = () => {
                     <div className="space-y-4">
                       <button
                         className="w-full bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
-                        onClick={()=>handlePayNow(selectedRoomData.totalAmount)}
+                        onClick={() =>
+                          handlePayNow(selectedRoomData.totalAmount)
+                        }
                       >
                         Pay Now
                       </button>
                       <button className="w-full bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600">
                         Pay at Hotel
                       </button>
-                      
                     </div>
                   </div>
                 </div>
