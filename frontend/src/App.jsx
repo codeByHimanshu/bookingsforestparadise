@@ -6,7 +6,6 @@ import Contact from "./Contact.jsx";
 import Home from "./Home.jsx";
 import Gallery from "./Gallery.jsx";
 import Rooms from "./Rooms.jsx";
-import BookingSystem from "./BookingSystem.jsx";
 import BookingSystem2 from "./BookingSystem2.jsx";
 import RoomCard from "./components/Roomcard.jsx";
 import Ecom from "./test.jsx";
@@ -42,8 +41,6 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/rooms" element={<Rooms />} />
-          <Route path="/booking" element={<BookingSystem />} />
-
           <Route path="/booking2" element={<BookingSystem2 />} />
 
           <Route path="/test" element={<Ecom />} />

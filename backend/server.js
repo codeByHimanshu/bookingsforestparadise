@@ -173,13 +173,10 @@ app.post("/verify-payment", async (req, res) => {
                         </tr>
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rooms:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.rooms}</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.room}</td>
                         </tr>
                       
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Guests:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Adults: ${bookings.adults}, Children: ${bookings.children}</td>
-                        </tr>
+                       
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Order ID:</td>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order_id}</td>
@@ -253,7 +250,7 @@ app.post("/verify-payment", async (req, res) => {
                         </tr>
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rooms:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.rooms}</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.room}</td>
                         </tr>
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">roomType:</td>
@@ -263,10 +260,7 @@ app.post("/verify-payment", async (req, res) => {
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Email:</td>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.email}</td>
                         </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Guests:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Adults: ${bookings.adults}, Children: ${bookings.children}</td>
-                        </tr>
+                       
         </table>
         <p style="font-size: 14px; color: #777;">Please log into the admin dashboard for more details. If you have any questions, contact the support team.</p>
         <p style="text-align: center; font-size: 14px; color: #777;">📍 Admin Dashboard - Ratana International</p>
