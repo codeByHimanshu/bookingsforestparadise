@@ -8,7 +8,6 @@ import Gallery from "./Gallery.jsx";
 import Rooms from "./Rooms.jsx";
 import BookingSystem2 from "./BookingSystem2.jsx";
 import RoomCard from "./components/Roomcard.jsx";
-import Ecom from "./test.jsx";
 import { RecoilRoot } from "recoil";
 import FormPage from "./FormPage.jsx";
 // import { BookingProvider } from "./BookingContext.jsx";
@@ -42,8 +41,6 @@ const App = () => {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/rooms" element={<Rooms />} />
           <Route path="/booking2" element={<BookingSystem2 />} />
-
-          <Route path="/test" element={<Ecom />} />
           <Route path="/form" element={<FormPage />} />
         </Routes>
       </RecoilRoot>
