@@ -1,8 +1,15 @@
 import { useState, useEffect } from "react";
 import Header from "./components/Header";
-import { checkInDate, checkOutDate, selectedRooms,price, global_count } from "./store/atoms";
+import {
+  checkInDate,
+  checkOutDate,
+  selectedRooms,
+  price,
+  global_count,
+} from "./store/atoms";
 import { useRecoilState } from "recoil";
 import { Link } from "react-router-dom";
+import { initializePayment } from "./utils/peyment";
 
 const RoomAvailabilityCheck = () => {
   const [bookingDetails, setBookingDetails] = useState([]);
@@ -10,8 +17,8 @@ const RoomAvailabilityCheck = () => {
   const [showButtonClick4, setShowButtonClick4] = useState(false);
   const [date, setDate] = useRecoilState(checkInDate);
   const [selectRooms, setSelectRoom] = useRecoilState(selectedRooms);
-  const [money,setMoney]=useRecoilState(price);
-  const [count,setCount]=useRecoilState(global_count)
+  const [money, setMoney] = useRecoilState(price);
+  const [count, setCount] = useRecoilState(global_count);
   const handleAddRoomClick4 = () => {
     setShowButtonClick4(true);
   };
@@ -51,9 +58,10 @@ const RoomAvailabilityCheck = () => {
     }, 0);
   };
   setMoney(getTotalPrice());
-  useEffect(()=>{
+  useEffect(() => {
     setCount(Object.values(selectRooms).reduce((sum, num) => sum + num, 0));
-  },[selectRooms])
+  }, [selectRooms]);
+
   return (
     <>
       <Header />

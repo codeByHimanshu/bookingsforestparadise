@@ -7,7 +7,7 @@ import {
   price,
   global_count,
 } from "./store/atoms";
-
+import { initializePayment } from "./utils/peyment";
 const FormPage = () => {
   const [today, setToday] = useRecoilState(checkInDate);
   const [yestarday, setYestarday] = useRecoilState(checkOutDate);
@@ -86,10 +86,22 @@ const FormPage = () => {
         alert(`Error: ${result.error}`);
       }
     } catch (error) {
-      console.error("Error making booking request:", error.message, error.stack);
+      console.error(
+        "Error making booking request:",
+        error.message,
+        error.stack
+      );
     }
   };
+  const handlePayNow = async () => {
+    // console.log(totalAmount, "from handle paynow");
+    if (!totalPrice) {
+      alert("Please choose a room.");
+      return;
+    }
 
+    await initializePayment(totalPrice, formData.email);
+  };
   return (
     <div className="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-lg">
       <h1 className="text-3xl font-semibold text-center mb-6">
@@ -144,7 +156,7 @@ const FormPage = () => {
               <input
                 type="number"
                 name="NoOfPeople"
-                value={(formData.NoOfPeople)*2}
+                value={formData.NoOfPeople * 2}
                 onChange={handleChange}
                 className="mt-1 p-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
@@ -214,6 +226,7 @@ const FormPage = () => {
             <button
               type="submit"
               style={{ backgroundColor: "#455d58" }}
+              onClick={() => {handlePayNow()}}
               className="w-full py-3 text-white rounded-lg focus:outline-none focus:ring-2"
             >
               Confirm Booking
