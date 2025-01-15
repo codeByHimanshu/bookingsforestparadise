@@ -39,9 +39,6 @@ export const initializePayment = async (totalAmount,email) => {
         color: "#3399cc",
       },
       handler: async function (response) {
-        alert("Payment success");
-        console.log(order.order.id + "order id from payment js")
-
         try {
           const verifyResponse = await fetch(
             "http://localhost:5000/verify-payment",

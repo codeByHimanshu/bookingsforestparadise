@@ -8,7 +8,7 @@ export const checkInDate = atom({
 
 export const checkOutDate = atom({
     key: "checkOutDate",
-    default: new Date().toISOString().split("T")[0]
+    default:null
 });
 
 export const selectedRooms=atom({

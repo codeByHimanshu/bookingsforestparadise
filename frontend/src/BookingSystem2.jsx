@@ -16,6 +16,7 @@ const RoomAvailabilityCheck = () => {
   const [roomData, setRoomData] = useState([]);
   const [showButtonClick4, setShowButtonClick4] = useState(false);
   const [date, setDate] = useRecoilState(checkInDate);
+  const[outDate,setOutDate]=useRecoilState(checkOutDate)
   const [selectRooms, setSelectRoom] = useRecoilState(selectedRooms);
   const [money, setMoney] = useRecoilState(price);
   const [count, setCount] = useRecoilState(global_count);
@@ -34,6 +35,13 @@ const RoomAvailabilityCheck = () => {
     };
     fetchRooms();
   }, []);
+
+  const handleDateChange = (e)=>{
+const selectedDate = e.target.value
+setOutDate(selectedDate)
+console.log(selectedDate);
+
+  }
 
   const handleAddRoom = (roomname) => {
     setSelectRoom((prev) => {
@@ -64,12 +72,15 @@ const RoomAvailabilityCheck = () => {
     <>
       <Header />
       <div>
-        <div className="room-check-form  flex flex-row justify-center bg-gradient-to-r from-gray-800 to-green-500  m-6 rounded-2xl ">
+        <center>
+
+     
+        <div className="room-check-form  flex flex-row justify-center bg-gradient-to-r from-gray-300 to-green-500 w-fit m-6 rounded-2xl">
          
-            <form className="flex flex-row  w-70% p-8 ">
+            <form className="flex flex-row  w-70% p-4 ">
               <div className="flex">
               <div className="form-group">
-                <label htmlFor="checkInDate">Check-In Date</label>
+                <label  htmlFor="checkInDate">Check-In Date</label>
                 <input type="date" id="checkInDate" defaultValue={date}></input>
               </div>
               <div className="form-group">
@@ -77,7 +88,8 @@ const RoomAvailabilityCheck = () => {
                 <input
                   type="date"
                   id="checkOutDate"
-                  defaultValue={date}
+                  onChange={handleDateChange}
+                  
                 ></input>
               </div>
 
@@ -94,6 +106,7 @@ const RoomAvailabilityCheck = () => {
             </form>
          
         </div>
+      </center>
       </div>
       <div className="second-section flex ">
         <div className="flex-col w-full">
@@ -103,33 +116,29 @@ const RoomAvailabilityCheck = () => {
                 <div className="flex" key={room.id}>
                   <div className="image wala div w-1/3">
                     <div
-                      className="m-4 p-4 border-2 border-gray-300 rounded-xl"
+                      className="m-4  border-2  rounded-xl"
                       style={{ backgroundColor: "#ffffff" }}
                     >
-                      <img src={room.image} />
+                      <img  src={room.image} />
                     </div>
                   </div>
 
-                  <div class="flex w-2/3 ">
+                  <div class="flex w-full ">
                     <div
                       className="m-4 p-4 border-2 border-gray-300 rounded-xl w-2/3"
                       style={{ backgroundColor: "#ffffff" }}
                     >
-                      <div className="bg-white">
+                      <div>
                         <h1
                           className="text-2xl font-medium"
                           style={{ color: "#455d58" }}
                         >
                           {room.name}
                         </h1>
-                        <div className="mt-5 flex justify-between  ">
-                          <div className="firstpart">
-                            <div>
-                              <h1 className="text-2xl"></h1>
-                              <h6 className="text-2xl">some heading</h6>
-                            </div>
-                          </div>
-                          <div className="second flex-col relative">
+                        <div className="mt-12 flex justify-between  w-full ">
+
+                          <div className="second  relative">
+                            <div className="flex flex-row-reverse ">
                             <div className="flex-row static top-0 right-">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -146,7 +155,8 @@ const RoomAvailabilityCheck = () => {
                                 />
                               </svg>
                             </div>
-                            <div className="flex-row mt-2 static">
+
+                            <div className="mr-2 justify-items-end text-sm static">
                               <div style={{ color: "#666666" }} className="">
                                 Price for{" "}
                                 <span>{selectRooms[room.name] || 0}</span> Night
@@ -165,12 +175,18 @@ const RoomAvailabilityCheck = () => {
                                 </div>
                               </div>
                             </div>
+                            <div className="text-sm">
+
+                            <div>Room capacity : 2 adults ,1 child</div>
+                            <div>Room Rates Inclusive of Tax</div>
+                            </div>
+
+                            </div>
                           </div>
                         </div>
-                        <div className="border bg-gray-100  rounded-sm flex  justify-between">
+                        <div className=" mt-12 border-t-2 rounded-sm flex justify-between">
                           <div className="ml-3">
-                            <div>some heading</div>
-                            <div>some heading</div>
+                            
                           </div>
                           <div className="flex space-x-3 ">
                             <div className="mt-3" style={{ color: "#455d58" }}>
@@ -235,7 +251,7 @@ const RoomAvailabilityCheck = () => {
                                 </div>
                               ) : (
                                 <button
-                                  className="p-3 font-semibold
+                                  className="p-2 mt-1 font-semibold
                                   "
                                   style={{
                                     backgroundColor: "#455d58",
@@ -258,17 +274,17 @@ const RoomAvailabilityCheck = () => {
             </section>
           </div>
         </div>
-        <div class="flex flex-initial w-1/4">
+        <div class="flex flex-initial w-1/3">
           <div
-            className="m-4 p-4 border-2 border-white-300 rounded-xl "
+            className="m-4 p-4  border-2 w-full border-white-300 rounded-xl "
             style={{ backgroundColor: "#ffffff" }}
           >
             <div className="bg-gray-100">
               {" "}
-              <h1 className="text-2xl font-semibold">Booking Summary</h1>
+              <h1 className="text-2xl font-bold w-full border-b-2">Booking Summary</h1>
             </div>
             <div className="mt-2 font-semibold " style={{ color: "#444" }}>
-              Dates : <span>{date}</span> - <span>{date}</span>
+              Dates : <span>{date}</span> - <span>{outDate}</span>
             </div>
             {Object.keys(selectRooms).length > 0 && (
               <div className="mt-4">
@@ -302,14 +318,17 @@ const RoomAvailabilityCheck = () => {
               </span>
             </div>
             <div>
+              <center>
+
               <Link to="/form">
                 <button
-                  className="font-semibold text-2xl  text-white p-3 rounded"
+                  className=" text-xl w-full text-white p-2 rounded justify-center"
                   style={{ backgroundColor: "#455d58" }}
                 >
                   Book Now
                 </button>
               </Link>
+              </center>
             </div>
           </div>
         </div>

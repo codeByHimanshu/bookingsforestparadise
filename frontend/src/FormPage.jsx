@@ -108,7 +108,7 @@ const FormPage = () => {
       <div className="item1">
         <div className="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-lg">
           <h1 className="text-3xl font-semibold text-center mb-6">
-            Booking Summary
+            Booking Details
           </h1>
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
