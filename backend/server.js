@@ -107,19 +107,19 @@ app.post("/create-order", async (req, res) => {
   }
 });
 
-app.get('/get-email',async(req,res)=>{
-    try{
-        const email=req.body.email
-        const data=await Book.findOne({email});
-        if(email){
-             res.status(200).json({data} );
-        }
-    }catch(error){
-        res.status(404).json({
-            error:error.message
-        })
+app.get("/get-email", async (req, res) => {
+  try {
+    const email = req.body.email;
+    const data = await Book.findOne({ email });
+    if (email) {
+      res.status(200).json({ data });
     }
-})
+  } catch (error) {
+    res.status(404).json({
+      error: error.message,
+    });
+  }
+});
 
 app.post("/verify-payment", async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
@@ -161,7 +161,7 @@ app.post("/verify-payment", async (req, res) => {
             </tr>
             <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;">Email:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.email}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.email}</td>
             </tr>
              <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-in Date:</td>
@@ -173,7 +173,7 @@ app.post("/verify-payment", async (req, res) => {
                         </tr>
                         <tr>
                             <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rooms:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.room}</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.room.name}</td>
                         </tr>
                       
                        
@@ -203,68 +203,61 @@ app.post("/verify-payment", async (req, res) => {
     </div>
 `;
       const adminEmailBody = `
-            <h3>New Booking Received</h3>
+        <h3>New Booking Received</h3>
 
-            <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f1f1f1;">
+        <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f1f1f1;">
         <h2 style="color: #FF5722; text-align: center;">📬 New Booking Alert</h2>
         <p style="font-size: 16px; color: #555;">Dear Admin,</p>
         <p style="font-size: 16px; color: #555;">You have received a new booking. Here are the details:</p>
         
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-            <tr style="background-color: #FF5722; color: white; text-align: left;">
-                <th style="padding: 10px;">Details</th>
-                <th style="padding: 10px;">Information</th>
-            </tr>
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Name:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.username}</td>
-            </tr>
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Email_id:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.email}</td>
-            </tr>
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">contact details:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.phoneNumber}</td>
-            </tr>
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Order ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order_id}</td>
-            </tr>
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Amount Paid:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.amount}</td>
-            </tr>
+        <tr style="background-color: #FF5722; color: white; text-align: left;">
+            <th style="padding: 10px;">Details</th>
+            <th style="padding: 10px;">Information</th>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Name:</td>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.username}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Email_id:</td>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.email}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Contact details:</td>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.phoneNumber}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Order ID:</td>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.order_id}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Amount Paid:</td>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹${order.amount}</td>
+        </tr>
            
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment ID:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
-            </tr>
-             <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-in Date:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.checkInDate}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-out Date:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.checkOutDate}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rooms:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.room}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">roomType:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.roomType}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Email:</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.email}</td>
-                        </tr>
-                       
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Payment ID:</td>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${order.payment_id}</td>
+        </tr>
+         <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-in Date:</td>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.checkInDate}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Check-out Date:</td>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${bookings.checkOutDate}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rooms:</td>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;"> ${Object.values(bookings.room).map(value => value).join(", ")}</td>
+       
+        </tr>                    
+       
         </table>
         <p style="font-size: 14px; color: #777;">Please log into the admin dashboard for more details. If you have any questions, contact the support team.</p>
         <p style="text-align: center; font-size: 14px; color: #777;">📍 Admin Dashboard - Ratana International</p>
-    </div>
+        </div>
         `;
 
       if (bookings.email === order.email) {

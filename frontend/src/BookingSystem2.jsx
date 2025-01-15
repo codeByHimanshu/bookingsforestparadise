@@ -35,8 +35,6 @@ const RoomAvailabilityCheck = () => {
     fetchRooms();
   }, []);
 
-  // test check
-
   const handleAddRoom = (roomname) => {
     setSelectRoom((prev) => {
       const count = prev[roomname] ? prev[roomname] + 1 : 1;
@@ -66,9 +64,10 @@ const RoomAvailabilityCheck = () => {
     <>
       <Header />
       <div>
-        <div className="room-check-form w-3/4">
-          <center>
-            <form>
+        <div className="room-check-form  flex flex-row justify-center bg-gradient-to-r from-gray-800 to-green-500  m-6 rounded-2xl ">
+         
+            <form className="flex flex-row  w-70% p-8 ">
+              <div className="flex">
               <div className="form-group">
                 <label htmlFor="checkInDate">Check-In Date</label>
                 <input type="date" id="checkInDate" defaultValue={date}></input>
@@ -81,17 +80,19 @@ const RoomAvailabilityCheck = () => {
                   defaultValue={date}
                 ></input>
               </div>
-              <div className="">
+
+              </div>
+              <div className="w-full p-5">
                 <button
                   style={{ backgroundColor: "#455d58", color: "#ffffff" }}
-                  className="cAvail p-4 rounded-2xl font-semibold"
+                  className="cAvail p-4 w-3px rounded-2xl  font-semibold"
                   type="button"
                 >
                   Check Availability
                 </button>
               </div>
             </form>
-          </center>
+         
         </div>
       </div>
       <div className="second-section flex ">
